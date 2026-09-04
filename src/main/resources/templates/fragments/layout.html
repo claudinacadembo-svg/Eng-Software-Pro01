@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="pt"
-      th:fragment="pagina(titulo, conteudo)"
+      th:fragment="pagina(titulo, seccao, conteudo)"
       xmlns:th="http://www.thymeleaf.org"
       xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
@@ -11,42 +11,72 @@
 </head>
 <body>
 
-<header class="navegacao">
-    <div class="interior">
-        <a class="marca" th:href="@{/}">SGE <span>Sistema de Gestao de Expedientes</span></a>
+<div class="aplicacao">
+
+    <aside class="barra-lateral">
+        <a class="marca" th:href="@{/}">
+            <strong>SGE</strong>
+            <span>Sistema de Gestao de Expedientes</span>
+        </a>
 
         <nav>
-            <a th:href="@{/}">Painel</a>
-            <a th:href="@{/expedientes}" sec:authorize="hasAuthority('EXPEDIENTE_LER')">Expedientes</a>
-            <a th:href="@{/utilizadores}" sec:authorize="hasAuthority('UTILIZADOR_LER')">Utilizadores</a>
-            <a th:href="@{/papeis}" sec:authorize="hasAuthority('PAPEL_LER')">Papeis e permissoes</a>
-            <a th:href="@{/auditoria}" sec:authorize="hasAuthority('AUDITORIA_VER')">Auditoria</a>
-            <a th:href="@{/relatorios}" sec:authorize="hasAuthority('RELATORIO_VER')">Relatorios</a>
+            <div class="grupo">Principal</div>
+            <a th:href="@{/}" th:classappend="${seccao == 'painel'} ? 'activo'">Painel</a>
+            <a th:href="@{/expedientes}" sec:authorize="hasAuthority('EXPEDIENTE_LER')"
+               th:classappend="${seccao == 'expedientes'} ? 'activo'">Expedientes</a>
+            <a th:href="@{/expedientes/novo}" sec:authorize="hasAuthority('EXPEDIENTE_CRIAR')"
+               th:classappend="${seccao == 'novo-expediente'} ? 'activo'">Registar expediente</a>
+
+            <div class="grupo" sec:authorize="hasAnyAuthority('UTILIZADOR_LER','PAPEL_LER')">Administracao</div>
+            <a th:href="@{/utilizadores}" sec:authorize="hasAuthority('UTILIZADOR_LER')"
+               th:classappend="${seccao == 'utilizadores'} ? 'activo'">Utilizadores</a>
+            <a th:href="@{/papeis}" sec:authorize="hasAuthority('PAPEL_LER')"
+               th:classappend="${seccao == 'papeis'} ? 'activo'">Papeis e permissoes</a>
+
+            <div class="grupo" sec:authorize="hasAnyAuthority('AUDITORIA_VER','RELATORIO_VER')">Supervisao</div>
+            <a th:href="@{/auditoria}" sec:authorize="hasAuthority('AUDITORIA_VER')"
+               th:classappend="${seccao == 'auditoria'} ? 'activo'">Auditoria</a>
+            <a th:href="@{/relatorios}" sec:authorize="hasAuthority('RELATORIO_VER')"
+               th:classappend="${seccao == 'relatorios'} ? 'activo'">Relatorios</a>
+
+            <div class="grupo">Conta</div>
+            <a th:href="@{/perfil}" th:classappend="${seccao == 'perfil'} ? 'activo'">O meu perfil</a>
         </nav>
 
-        <div class="sessao">
-            <a th:href="@{/perfil}" class="nome">
-                <span th:text="${#authentication.principal.nomeCompleto}">Utilizador</span>
-                <span class="papel"
-                      th:text="${#strings.setJoin(#authentication.principal.utilizador.papeis, ', ')}">PAPEL</span>
-            </a>
-            <form th:action="@{/logout}" method="post">
-                <button type="submit" class="botao secundario pequeno">Terminar sessao</button>
-            </form>
+        <div class="rodape-lateral">
+            UnISCED &middot; Engenharia de Software
         </div>
+    </aside>
+
+    <div class="area">
+
+        <header class="topo">
+            <div class="titulo-topo" th:text="${titulo}">Titulo</div>
+            <div class="sessao">
+                <a th:href="@{/perfil}" class="identidade">
+                    <span class="nome" th:text="${#authentication.principal.nomeCompleto}">Utilizador</span>
+                    <span class="papel"
+                          th:text="${#strings.setJoin(#authentication.principal.utilizador.papeis, ', ')}">PAPEL</span>
+                </a>
+                <form th:action="@{/logout}" method="post">
+                    <button type="submit" class="botao secundario pequeno">Terminar sessao</button>
+                </form>
+            </div>
+        </header>
+
+        <main class="conteudo">
+            <div class="mensagem sucesso" th:if="${sucesso}" th:text="${sucesso}"></div>
+            <div class="mensagem erro" th:if="${erro}" th:text="${erro}"></div>
+
+            <th:block th:replace="${conteudo}"></th:block>
+        </main>
+
+        <footer class="rodape">
+            UnISCED &middot; Faculdade de Engenharia e Agricultura &middot; Trabalho de Campo de Engenharia de Software
+        </footer>
+
     </div>
-</header>
-
-<main class="conteudo">
-    <div class="mensagem sucesso" th:if="${sucesso}" th:text="${sucesso}"></div>
-    <div class="mensagem erro" th:if="${erro}" th:text="${erro}"></div>
-
-    <th:block th:replace="${conteudo}"></th:block>
-</main>
-
-<footer class="rodape">
-    UnISCED &middot; Faculdade de Engenharia e Agricultura &middot; Engenharia de Software &middot; Trabalho de Campo
-</footer>
+</div>
 
 </body>
 </html>

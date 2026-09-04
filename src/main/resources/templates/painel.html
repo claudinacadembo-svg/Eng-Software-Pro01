@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="pt" xmlns:th="http://www.thymeleaf.org"
       xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
-      th:replace="~{fragments/layout :: pagina('Painel', ~{::conteudo})}">
+      th:replace="~{fragments/layout :: pagina('Painel', 'painel', ~{::conteudo})}">
 <body>
 <th:block th:fragment="conteudo">
 
@@ -43,6 +43,18 @@
         <div class="indicador" sec:authorize="hasAuthority('UTILIZADOR_LER')">
             <div class="valor" th:text="${utilizadoresActivos}">0</div>
             <div class="rotulo">Utilizadores activos</div>
+        </div>
+    </div>
+
+    <div class="cartao" style="margin-top: 20px;" th:if="${totalExpedientes > 0}">
+        <h2>Distribuicao por estado</h2>
+        <div class="grelha colunas-2">
+            <div th:each="linha : ${distribuicao}">
+                <div th:text="${linha.key} + ': ' + ${linha.value}">estado</div>
+                <div class="barra">
+                    <span th:style="'width:' + ${linha.value * 100 / totalExpedientes} + '%'"></span>
+                </div>
+            </div>
         </div>
     </div>
 

@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="pt" xmlns:th="http://www.thymeleaf.org"
       xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
-      th:replace="~{fragments/layout :: pagina('Expediente', ~{::conteudo})}">
+      th:replace="~{fragments/layout :: pagina('Expediente', 'expedientes', ~{::conteudo})}">
 <body>
 <th:block th:fragment="conteudo">
 

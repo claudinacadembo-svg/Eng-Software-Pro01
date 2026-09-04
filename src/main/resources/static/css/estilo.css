@@ -38,83 +38,157 @@ a:hover {
     text-decoration: underline;
 }
 
-/* ---------- Barra de navegacao ---------- */
+/* ---------- Estrutura geral: barra lateral + area de trabalho ---------- */
 
-.navegacao {
-    background: var(--cor-primaria);
-    color: #fff;
-    box-shadow: var(--sombra);
-}
-
-.navegacao .interior {
-    max-width: 1180px;
-    margin: 0 auto;
-    padding: 0 20px;
+.aplicacao {
     display: flex;
-    align-items: center;
-    gap: 24px;
-    min-height: 58px;
-    flex-wrap: wrap;
+    min-height: 100vh;
 }
 
-.navegacao .marca {
-    font-weight: 700;
-    font-size: 18px;
+.barra-lateral {
+    width: 250px;
+    flex-shrink: 0;
+    background: linear-gradient(180deg, #0f4c81 0%, #0a3252 100%);
     color: #fff;
-    letter-spacing: 0.5px;
+    display: flex;
+    flex-direction: column;
+    position: sticky;
+    top: 0;
+    height: 100vh;
 }
 
-.navegacao .marca span {
-    font-weight: 400;
-    opacity: 0.75;
-    font-size: 13px;
+.barra-lateral .marca {
     display: block;
+    padding: 20px 20px 18px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+    color: #fff;
 }
 
-.navegacao nav {
-    display: flex;
-    gap: 4px;
-    flex-wrap: wrap;
+.barra-lateral .marca:hover {
+    text-decoration: none;
 }
 
-.navegacao nav a {
-    color: rgba(255, 255, 255, 0.88);
-    padding: 8px 12px;
+.barra-lateral .marca strong {
+    font-size: 22px;
+    letter-spacing: 2px;
+}
+
+.barra-lateral .marca span {
+    display: block;
+    font-size: 11.5px;
+    opacity: 0.72;
+    margin-top: 3px;
+    line-height: 1.35;
+}
+
+.barra-lateral nav {
+    flex: 1;
+    padding: 10px 12px 18px;
+    overflow-y: auto;
+}
+
+.barra-lateral .grupo {
+    font-size: 10.5px;
+    text-transform: uppercase;
+    letter-spacing: 1.2px;
+    opacity: 0.55;
+    padding: 16px 10px 6px;
+}
+
+.barra-lateral nav a {
+    display: block;
+    padding: 9px 12px;
     border-radius: var(--raio);
+    color: rgba(255, 255, 255, 0.85);
     font-size: 14px;
+    margin-bottom: 2px;
+    border-left: 3px solid transparent;
 }
 
-.navegacao nav a:hover,
-.navegacao nav a.activo {
-    background: rgba(255, 255, 255, 0.16);
+.barra-lateral nav a:hover {
+    background: rgba(255, 255, 255, 0.12);
     color: #fff;
     text-decoration: none;
 }
 
-.navegacao .sessao {
-    margin-left: auto;
+.barra-lateral nav a.activo {
+    background: rgba(255, 255, 255, 0.96);
+    color: var(--cor-primaria-escura);
+    font-weight: 600;
+    border-left-color: #ffd166;
+}
+
+.barra-lateral .rodape-lateral {
+    padding: 14px 20px;
+    border-top: 1px solid rgba(255, 255, 255, 0.15);
+    font-size: 11.5px;
+    opacity: 0.7;
+}
+
+.area {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    background: var(--cor-fundo);
+}
+
+.topo {
+    background: var(--cor-superficie);
+    border-bottom: 1px solid var(--cor-borda);
+    padding: 12px 28px;
     display: flex;
     align-items: center;
-    gap: 12px;
-    font-size: 14px;
+    justify-content: space-between;
+    gap: 16px;
+    position: sticky;
+    top: 0;
+    z-index: 5;
+    flex-wrap: wrap;
 }
 
-.navegacao .sessao .nome {
-    color: #fff;
+.topo .titulo-topo {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--cor-primaria-escura);
 }
 
-.navegacao .sessao .papel {
+.topo .sessao {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+
+.topo .identidade {
+    text-align: right;
+    color: var(--cor-texto);
+    line-height: 1.3;
+}
+
+.topo .identidade:hover {
+    text-decoration: none;
+}
+
+.topo .identidade .nome {
     display: block;
-    font-size: 12px;
-    opacity: 0.75;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.topo .identidade .papel {
+    display: block;
+    font-size: 11.5px;
+    color: var(--cor-texto-suave);
 }
 
 /* ---------- Estrutura ---------- */
 
 .conteudo {
-    max-width: 1180px;
-    margin: 24px auto 48px;
-    padding: 0 20px;
+    flex: 1;
+    max-width: 1240px;
+    width: 100%;
+    margin: 0 auto;
+    padding: 24px 28px 40px;
 }
 
 .cabecalho-pagina {
@@ -456,29 +530,13 @@ table.tabela tbody tr:hover {
     margin-top: 6px;
 }
 
-.contas-demonstracao {
+.nota-login {
     margin-top: 22px;
     border-top: 1px solid var(--cor-borda);
     padding-top: 14px;
     font-size: 12.5px;
     color: var(--cor-texto-suave);
-}
-
-.contas-demonstracao table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 6px;
-}
-
-.contas-demonstracao td {
-    padding: 3px 0;
-}
-
-.contas-demonstracao code {
-    background: #eef2f7;
-    padding: 1px 5px;
-    border-radius: 4px;
-    color: #33445c;
+    line-height: 1.5;
 }
 
 /* ---------- Historico de tramitacao ---------- */
@@ -600,4 +658,46 @@ dl.dados dd {
 .mono {
     font-family: "Consolas", monospace;
     font-size: 13px;
+}
+
+/* ---------- Adaptacao a ecras pequenos ---------- */
+
+@media (max-width: 900px) {
+    .aplicacao {
+        flex-direction: column;
+    }
+
+    .barra-lateral {
+        width: 100%;
+        height: auto;
+        position: static;
+    }
+
+    .barra-lateral nav {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 4px;
+        padding: 10px 12px;
+    }
+
+    .barra-lateral .grupo {
+        width: 100%;
+        padding: 8px 10px 2px;
+    }
+
+    .barra-lateral nav a {
+        margin-bottom: 0;
+    }
+
+    .barra-lateral .rodape-lateral {
+        display: none;
+    }
+
+    .conteudo {
+        padding: 18px 16px 32px;
+    }
+
+    dl.dados {
+        grid-template-columns: 1fr;
+    }
 }

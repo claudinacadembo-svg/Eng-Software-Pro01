@@ -1,5 +1,7 @@
 package mz.unisced.sge.web;
 
+import java.util.LinkedHashMap;
+import java.util.Map;
 import mz.unisced.sge.model.EstadoExpediente;
 import mz.unisced.sge.model.Utilizador;
 import mz.unisced.sge.repository.ExpedienteRepository;
@@ -41,6 +43,16 @@ public class PainelController {
         modelo.addAttribute("arquivados", expedienteRepository.countByEstado(EstadoExpediente.ARQUIVADO));
         modelo.addAttribute("utilizadoresActivos", utilizadorRepository.countByActivoTrue());
         modelo.addAttribute("meusExpedientes", expedienteService.pendentesDe(utilizador));
+        modelo.addAttribute("distribuicao", distribuicaoPorEstado());
         return "painel";
+    }
+
+    /** Contagem de expedientes por estado, para as barras de proporcao do painel. */
+    private Map<String, Long> distribuicaoPorEstado() {
+        Map<String, Long> distribuicao = new LinkedHashMap<>();
+        for (Object[] linha : expedienteRepository.contarPorEstado()) {
+            distribuicao.put(((EstadoExpediente) linha[0]).getDescricao(), ((Number) linha[1]).longValue());
+        }
+        return distribuicao;
     }
 }
