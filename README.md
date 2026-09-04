@@ -273,7 +273,25 @@ PROJECTO-ESW/
 
 ---
 
-## 7. Autores
+## 7. Documentação técnica
+
+A documentação técnica completa do trabalho encontra-se na pasta [docs/](docs/):
+
+| Ficheiro | Conteúdo |
+|---|---|
+| `docs/Relatorio-SGE-UnISCED.docx` | Relatório técnico: introdução e objectivos, metodologia (Scrum), requisitos funcionais e não funcionais, diagramas UML explicados, modelo entidade-relacionamento, arquitectura, detalhe da implementação do RBAC, testes e conclusão |
+| `docs/diagramas/*.puml` | Código-fonte dos diagramas (PlantUML) |
+| `docs/diagramas/*.png` | Diagramas gerados: casos de uso, classes, actividade, sequência, modelo entidade-relacionamento e arquitectura |
+
+Para voltar a gerar as imagens após alterar um diagrama:
+
+```powershell
+java -jar plantuml.jar -tpng docs/diagramas/*.puml
+```
+
+---
+
+## 8. Autores
 
 Trabalho realizado em grupo, no âmbito da disciplina de Engenharia de Software.
 
