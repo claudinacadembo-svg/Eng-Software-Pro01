@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="pt" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{fragments/layout :: pagina('Utilizador', ~{::conteudo})}">
+<body>
+<th:block th:fragment="conteudo">
+
+    <div class="cabecalho-pagina">
+        <div>
+            <h1 th:text="${utilizador.id == null} ? 'Novo utilizador' : 'Editar utilizador'">Utilizador</h1>
+            <p>A atribuicao de papeis determina o que a conta pode fazer no sistema (RBAC).</p>
+        </div>
+        <a class="botao secundario" th:href="@{/utilizadores}">Voltar</a>
+    </div>
+
+    <div class="cartao">
+        <form method="post"
+              th:action="${utilizador.id == null} ? @{/utilizadores} : @{/utilizadores/{id}(id=${utilizador.id})}"
+              th:object="${utilizador}">
+
+            <div class="grelha colunas-2">
+                <div class="campo">
+                    <label for="nomeCompleto">Nome completo *</label>
+                    <input type="text" id="nomeCompleto" th:field="*{nomeCompleto}" required>
+                    <div class="erro-campo" th:if="${#fields.hasErrors('nomeCompleto')}"
+                         th:errors="*{nomeCompleto}"></div>
+                </div>
+
+                <div class="campo">
+                    <label for="username">Nome de utilizador *</label>
+                    <input type="text" id="username" th:field="*{username}" required>
+                    <div class="erro-campo" th:if="${#fields.hasErrors('username')}" th:errors="*{username}"></div>
+                </div>
+
+                <div class="campo">
+                    <label for="email">Email *</label>
+                    <input type="email" id="email" th:field="*{email}" required>
+                    <div class="erro-campo" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></div>
+                </div>
+
+                <div class="campo">
+                    <label for="departamento">Departamento</label>
+                    <input type="text" id="departamento" th:field="*{departamento}">
+                </div>
+
+                <div class="campo">
+                    <label for="palavraPasse"
+                           th:text="${utilizador.id == null} ? 'Palavra-passe * (min. 6 caracteres)' : 'Nova palavra-passe (deixar vazio para manter)'">
+                        Palavra-passe</label>
+                    <input type="password" id="palavraPasse" name="palavraPasse"
+                           th:required="${utilizador.id == null}">
+                </div>
+
+                <div class="campo">
+                    <label for="activo">Estado da conta</label>
+                    <select id="activo" th:field="*{activo}">
+                        <option th:value="true">Activa</option>
+                        <option th:value="false">Inactiva</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="campo">
+                <label>Papeis atribuidos *</label>
+                <div class="opcoes">
+                    <label class="opcao" th:each="p : ${papeis}">
+                        <input type="checkbox" name="papeisIds" th:value="${p.id}"
+                               th:checked="${papeisSeleccionados.contains(p.id)}">
+                        <span>
+                            <strong th:text="${p.nome}">PAPEL</strong><br>
+                            <span class="texto-suave" th:text="${p.descricao}">descricao</span>
+                        </span>
+                    </label>
+                </div>
+            </div>
+
+            <div class="accoes">
+                <button type="submit" class="botao">Gravar</button>
+                <a class="botao secundario" th:href="@{/utilizadores}">Cancelar</a>
+            </div>
+        </form>
+    </div>
+
+</th:block>
+</body>
+</html>

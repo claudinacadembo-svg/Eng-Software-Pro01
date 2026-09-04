@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="pt" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      th:replace="~{fragments/layout :: pagina('Expediente', ~{::conteudo})}">
+<body>
+<th:block th:fragment="conteudo">
+
+    <div class="cabecalho-pagina">
+        <div>
+            <h1 th:text="${expediente.assunto}">Assunto</h1>
+            <p>
+                <span class="mono" th:text="${expediente.numeroRegisto}">EXP</span>
+                &middot;
+                <span class="etiqueta" th:classappend="${#strings.toLowerCase(expediente.estado.name())}"
+                      th:text="${expediente.estado.descricao}">Estado</span>
+                <span class="etiqueta" th:classappend="${#strings.toLowerCase(expediente.confidencialidade.name())}"
+                      th:text="${expediente.confidencialidade.descricao}">Nivel</span>
+            </p>
+        </div>
+        <div class="accoes">
+            <a class="botao secundario" th:href="@{/expedientes/{id}/editar(id=${expediente.id})}"
+               th:if="${expediente.editavel}" sec:authorize="hasAuthority('EXPEDIENTE_ACTUALIZAR')">Editar</a>
+            <a class="botao secundario" th:href="@{/expedientes}">Voltar</a>
+        </div>
+    </div>
+
+    <div class="grelha colunas-2">
+
+        <div>
+            <div class="cartao">
+                <h2>Dados do expediente</h2>
+                <dl class="dados">
+                    <dt>Numero de registo</dt>
+                    <dd class="mono" th:text="${expediente.numeroRegisto}">EXP</dd>
+
+                    <dt>Tipo</dt>
+                    <dd th:text="${expediente.tipo.descricao}">Tipo</dd>
+
+                    <dt>Prioridade</dt>
+                    <dd>
+                        <span class="etiqueta" th:classappend="${#strings.toLowerCase(expediente.prioridade.name())}"
+                              th:text="${expediente.prioridade.descricao}">Prioridade</span>
+                    </dd>
+
+                    <dt>Remetente / origem</dt>
+                    <dd th:text="${expediente.remetente}">Remetente</dd>
+
+                    <dt>Destinatario externo</dt>
+                    <dd th:text="${expediente.destinatarioExterno} ?: '-'">-</dd>
+
+                    <dt>Registado por</dt>
+                    <dd th:text="${expediente.criadoPor.nomeCompleto}">Autor</dd>
+
+                    <dt>Responsavel actual</dt>
+                    <dd th:text="${expediente.responsavelActual != null} ? ${expediente.responsavelActual.nomeCompleto} : '-'">-</dd>
+
+                    <dt>Data de registo</dt>
+                    <dd th:text="${#temporals.format(expediente.dataRegisto, 'dd/MM/yyyy HH:mm')}">data</dd>
+
+                    <dt>Prazo</dt>
+                    <dd>
+                        <span th:if="${expediente.prazo}"
+                              th:text="${#temporals.format(expediente.prazo, 'dd/MM/yyyy')}">-</span>
+                        <span th:unless="${expediente.prazo}" class="texto-suave">sem prazo</span>
+                        <span class="etiqueta cancelado" th:if="${expediente.atrasado}">atrasado</span>
+                    </dd>
+
+                    <dt>Descricao</dt>
+                    <dd th:text="${expediente.descricao} ?: '-'">-</dd>
+                </dl>
+            </div>
+
+            <div class="cartao">
+                <h2>Anexos</h2>
+                <div class="vazio" th:if="${#lists.isEmpty(expediente.anexos)}">Sem anexos.</div>
+                <div class="tabela-envolvente" th:unless="${#lists.isEmpty(expediente.anexos)}">
+                    <table class="tabela">
+                        <thead>
+                        <tr><th>Ficheiro</th><th>Tamanho</th><th>Carregado por</th><th></th></tr>
+                        </thead>
+                        <tbody>
+                        <tr th:each="a : ${expediente.anexos}">
+                            <td th:text="${a.nomeFicheiro}">ficheiro</td>
+                            <td th:text="${a.tamanhoLegivel}">0 KB</td>
+                            <td th:text="${a.carregadoPor.nomeCompleto}">-</td>
+                            <td>
+                                <a class="botao secundario pequeno"
+                                   th:href="@{/expedientes/anexos/{id}(id=${a.id})}">Descarregar</a>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <form th:action="@{/expedientes/{id}/anexos(id=${expediente.id})}" method="post"
+                      enctype="multipart/form-data" style="margin-top: 14px;"
+                      th:if="${expediente.editavel}" sec:authorize="hasAuthority('EXPEDIENTE_ACTUALIZAR')">
+                    <div class="campo">
+                        <label for="ficheiro">Adicionar anexo (max. 5 MB)</label>
+                        <input type="file" id="ficheiro" name="ficheiro" required>
+                    </div>
+                    <button type="submit" class="botao secundario">Anexar</button>
+                </form>
+            </div>
+        </div>
+
+        <div>
+            <div class="cartao" th:if="${expediente.editavel}">
+                <h2>Accoes sobre o expediente</h2>
+
+                <form th:action="@{/expedientes/{id}/tramitar(id=${expediente.id})}" method="post"
+                      sec:authorize="hasAuthority('EXPEDIENTE_TRAMITAR')">
+                    <div class="campo">
+                        <label for="destinoId">Encaminhar para</label>
+                        <select id="destinoId" name="destinoId" required>
+                            <option value="">Seleccione o destinatario</option>
+                            <option th:each="u : ${utilizadores}" th:value="${u.id}"
+                                    th:text="${u.nomeCompleto} + ' (' + ${u.departamento} + ')'"></option>
+                        </select>
+                    </div>
+                    <div class="campo">
+                        <label for="observacao">Observacao</label>
+                        <textarea id="observacao" name="observacao"
+                                  placeholder="Instrucoes para o destinatario"></textarea>
+                    </div>
+                    <button type="submit" class="botao">Encaminhar</button>
+                </form>
+
+                <hr style="border: none; border-top: 1px solid var(--cor-borda); margin: 18px 0;"
+                    sec:authorize="hasAuthority('EXPEDIENTE_DESPACHAR')">
+
+                <form th:action="@{/expedientes/{id}/despachar(id=${expediente.id})}" method="post"
+                      sec:authorize="hasAuthority('EXPEDIENTE_DESPACHAR')">
+                    <div class="campo">
+                        <label for="decisao">Decisao do despacho</label>
+                        <select id="decisao" name="decisao" required>
+                            <option th:each="d : ${decisoes}" th:value="${d.name()}" th:text="${d.descricao}"></option>
+                        </select>
+                    </div>
+                    <div class="campo">
+                        <label for="textoDespacho">Texto do despacho *</label>
+                        <textarea id="textoDespacho" name="texto" required></textarea>
+                    </div>
+                    <button type="submit" class="botao">Despachar</button>
+                </form>
+
+                <hr style="border: none; border-top: 1px solid var(--cor-borda); margin: 18px 0;"
+                    sec:authorize="hasAuthority('EXPEDIENTE_ARQUIVAR')">
+
+                <div sec:authorize="hasAuthority('EXPEDIENTE_ARQUIVAR')">
+                    <form th:action="@{/expedientes/{id}/arquivar(id=${expediente.id})}" method="post">
+                        <div class="campo">
+                            <label for="obsArquivo">Observacao de arquivo</label>
+                            <input type="text" id="obsArquivo" name="observacao"
+                                   placeholder="Ex.: processo concluido">
+                        </div>
+                        <button type="submit" class="botao secundario">Arquivar</button>
+                    </form>
+
+                    <form th:action="@{/expedientes/{id}/cancelar(id=${expediente.id})}" method="post"
+                          style="margin-top: 12px;">
+                        <div class="campo">
+                            <label for="motivo">Motivo do cancelamento *</label>
+                            <input type="text" id="motivo" name="motivo" required>
+                        </div>
+                        <button type="submit" class="botao perigo">Cancelar expediente</button>
+                    </form>
+                </div>
+
+                <form th:action="@{/expedientes/{id}/eliminar(id=${expediente.id})}" method="post"
+                      style="margin-top: 12px;" sec:authorize="hasAuthority('EXPEDIENTE_ELIMINAR')"
+                      onsubmit="return confirm('Eliminar definitivamente este expediente?');">
+                    <button type="submit" class="botao perigo">Eliminar</button>
+                </form>
+            </div>
+
+            <div class="cartao" th:unless="${expediente.editavel}">
+                <h2>Accoes sobre o expediente</h2>
+                <p class="texto-suave"
+                   th:text="'O expediente esta ' + ${expediente.estado.descricao} + ' e ja nao admite movimentacao.'">
+                </p>
+            </div>
+
+            <div class="cartao">
+                <h2>Despachos</h2>
+                <div class="vazio" th:if="${#lists.isEmpty(expediente.despachos)}">Ainda sem despachos.</div>
+                <ul class="linha-tempo" th:unless="${#lists.isEmpty(expediente.despachos)}">
+                    <li th:each="d : ${expediente.despachos}">
+                        <div class="momento"
+                             th:text="${#temporals.format(d.dataDespacho, 'dd/MM/yyyy HH:mm')} + ' &middot; ' + ${d.autor.nomeCompleto}">
+                            data</div>
+                        <div class="titulo" th:text="${d.decisao.descricao}">Decisao</div>
+                        <div class="detalhe" th:text="${d.texto}">Texto</div>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="cartao">
+                <h2>Historico de tramitacao</h2>
+                <ul class="linha-tempo">
+                    <li th:each="t : ${expediente.tramitacoes}">
+                        <div class="momento"
+                             th:text="${#temporals.format(t.dataMovimento, 'dd/MM/yyyy HH:mm')}">data</div>
+                        <div class="titulo" th:text="${t.tipo.descricao}">Movimento</div>
+                        <div class="detalhe">
+                            <span th:if="${t.origem != null}" th:text="'De: ' + ${t.origem.nomeCompleto} + ' '">De</span>
+                            <span th:if="${t.destino != null}" th:text="'Para: ' + ${t.destino.nomeCompleto}">Para</span>
+                        </div>
+                        <div class="detalhe" th:if="${t.observacao}" th:text="${t.observacao}">Observacao</div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+</th:block>
+</body>
+</html>

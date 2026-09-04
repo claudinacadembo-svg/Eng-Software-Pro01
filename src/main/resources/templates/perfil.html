@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="pt" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{fragments/layout :: pagina('Perfil', ~{::conteudo})}">
+<body>
+<th:block th:fragment="conteudo">
+
+    <div class="cabecalho-pagina">
+        <div>
+            <h1>O meu perfil</h1>
+            <p>Dados da conta e permissoes efectivas concedidas pelos seus papeis.</p>
+        </div>
+    </div>
+
+    <div class="grelha colunas-2">
+        <div class="cartao">
+            <h2>Dados da conta</h2>
+            <dl class="dados">
+                <dt>Nome completo</dt>
+                <dd th:text="${utilizador.nomeCompleto}">nome</dd>
+                <dt>Nome de utilizador</dt>
+                <dd class="mono" th:text="${utilizador.username}">username</dd>
+                <dt>Email</dt>
+                <dd th:text="${utilizador.email}">email</dd>
+                <dt>Departamento</dt>
+                <dd th:text="${utilizador.departamento} ?: '-'">-</dd>
+                <dt>Conta criada em</dt>
+                <dd th:text="${#temporals.format(utilizador.dataCriacao, 'dd/MM/yyyy HH:mm')}">data</dd>
+                <dt>Ultimo acesso</dt>
+                <dd th:text="${utilizador.ultimoAcesso != null} ? ${#temporals.format(utilizador.ultimoAcesso, 'dd/MM/yyyy HH:mm')} : '-'">-</dd>
+            </dl>
+
+            <h2 style="margin-top: 20px;">Papeis e permissoes</h2>
+            <div th:each="p : ${utilizador.papeis}" style="margin-bottom: 12px;">
+                <strong th:text="${p.nome}">PAPEL</strong>
+                <div class="texto-suave" th:text="${p.descricao}">descricao</div>
+                <div>
+                    <span class="etiqueta permissao" th:each="perm : ${p.permissoes}"
+                          th:text="${perm.codigo}">PERM</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="cartao">
+            <h2>Alterar palavra-passe</h2>
+            <form method="post" th:action="@{/perfil/palavra-passe}">
+                <div class="campo">
+                    <label for="actual">Palavra-passe actual *</label>
+                    <input type="password" id="actual" name="actual" required>
+                </div>
+                <div class="campo">
+                    <label for="nova">Nova palavra-passe * (min. 6 caracteres)</label>
+                    <input type="password" id="nova" name="nova" required minlength="6">
+                </div>
+                <div class="campo">
+                    <label for="confirmacao">Confirmar nova palavra-passe *</label>
+                    <input type="password" id="confirmacao" name="confirmacao" required minlength="6">
+                </div>
+                <button type="submit" class="botao">Alterar</button>
+            </form>
+        </div>
+    </div>
+
+</th:block>
+</body>
+</html>

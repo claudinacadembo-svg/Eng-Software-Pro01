@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="pt" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      th:replace="~{fragments/layout :: pagina('Painel', ~{::conteudo})}">
+<body>
+<th:block th:fragment="conteudo">
+
+    <div class="cabecalho-pagina">
+        <div>
+            <h1 th:text="'Bem-vindo(a), ' + ${utilizador.nomeCompleto}">Bem-vindo</h1>
+            <p th:text="${utilizador.departamento} + ' &middot; ' + ${#strings.setJoin(utilizador.papeis, ', ')}">
+                Departamento</p>
+        </div>
+        <div class="accoes">
+            <a class="botao" th:href="@{/expedientes/novo}" sec:authorize="hasAuthority('EXPEDIENTE_CRIAR')">
+                Registar expediente</a>
+            <a class="botao secundario" th:href="@{/expedientes}" sec:authorize="hasAuthority('EXPEDIENTE_LER')">
+                Ver expedientes</a>
+        </div>
+    </div>
+
+    <div class="grelha colunas-4">
+        <div class="indicador">
+            <div class="valor" th:text="${totalExpedientes}">0</div>
+            <div class="rotulo">Total de expedientes</div>
+        </div>
+        <div class="indicador">
+            <div class="valor" th:text="${registados}">0</div>
+            <div class="rotulo">Registados</div>
+        </div>
+        <div class="indicador">
+            <div class="valor" th:text="${emTramitacao}">0</div>
+            <div class="rotulo">Em tramitacao</div>
+        </div>
+        <div class="indicador">
+            <div class="valor" th:text="${despachados}">0</div>
+            <div class="rotulo">Despachados</div>
+        </div>
+        <div class="indicador">
+            <div class="valor" th:text="${arquivados}">0</div>
+            <div class="rotulo">Arquivados</div>
+        </div>
+        <div class="indicador" sec:authorize="hasAuthority('UTILIZADOR_LER')">
+            <div class="valor" th:text="${utilizadoresActivos}">0</div>
+            <div class="rotulo">Utilizadores activos</div>
+        </div>
+    </div>
+
+    <div class="cartao" style="margin-top: 20px;">
+        <h2>Expedientes a meu cargo</h2>
+
+        <div class="vazio" th:if="${#lists.isEmpty(meusExpedientes)}">
+            Nao tem expedientes pendentes neste momento.
+        </div>
+
+        <div class="tabela-envolvente" th:unless="${#lists.isEmpty(meusExpedientes)}">
+            <table class="tabela">
+                <thead>
+                <tr>
+                    <th>Numero</th>
+                    <th>Assunto</th>
+                    <th>Tipo</th>
+                    <th>Estado</th>
+                    <th>Prioridade</th>
+                    <th>Prazo</th>
+                    <th></th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="e : ${meusExpedientes}">
+                    <td class="mono" th:text="${e.numeroRegisto}">EXP</td>
+                    <td th:text="${e.assunto}">Assunto</td>
+                    <td th:text="${e.tipo.descricao}">Tipo</td>
+                    <td>
+                        <span class="etiqueta" th:classappend="${#strings.toLowerCase(e.estado.name())}"
+                              th:text="${e.estado.descricao}">Estado</span>
+                    </td>
+                    <td>
+                        <span class="etiqueta" th:classappend="${#strings.toLowerCase(e.prioridade.name())}"
+                              th:text="${e.prioridade.descricao}">Prioridade</span>
+                    </td>
+                    <td>
+                        <span th:if="${e.prazo}" th:text="${#temporals.format(e.prazo, 'dd/MM/yyyy')}">-</span>
+                        <span th:unless="${e.prazo}" class="texto-suave">sem prazo</span>
+                        <span class="etiqueta cancelado" th:if="${e.atrasado}">atrasado</span>
+                    </td>
+                    <td><a class="botao secundario pequeno" th:href="@{/expedientes/{id}(id=${e.id})}">Abrir</a></td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+</th:block>
+</body>
+</html>

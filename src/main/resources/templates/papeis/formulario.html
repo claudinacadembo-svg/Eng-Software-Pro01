@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="pt" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{fragments/layout :: pagina('Editar papel', ~{::conteudo})}">
+<body>
+<th:block th:fragment="conteudo">
+
+    <div class="cabecalho-pagina">
+        <div>
+            <h1 th:text="'Permissoes do papel ' + ${papel.nome}">Papel</h1>
+            <p>Alterar as permissoes deste papel afecta imediatamente todos os utilizadores que o detem.</p>
+        </div>
+        <a class="botao secundario" th:href="@{/papeis}">Voltar</a>
+    </div>
+
+    <div class="cartao">
+        <form method="post" th:action="@{/papeis/{id}(id=${papel.id})}">
+            <div class="campo">
+                <label for="descricao">Descricao</label>
+                <input type="text" id="descricao" name="descricao" th:value="${papel.descricao}">
+            </div>
+
+            <div class="campo" th:each="entrada : ${permissoesPorModulo}">
+                <label th:text="${entrada.key}">Modulo</label>
+                <div class="opcoes">
+                    <label class="opcao" th:each="perm : ${entrada.value}">
+                        <input type="checkbox" name="permissoesIds" th:value="${perm.id}"
+                               th:checked="${permissoesSeleccionadas.contains(perm.id)}">
+                        <span>
+                            <span class="mono" th:text="${perm.codigo}">CODIGO</span><br>
+                            <span class="texto-suave" th:text="${perm.descricao}">descricao</span>
+                        </span>
+                    </label>
+                </div>
+            </div>
+
+            <div class="accoes">
+                <button type="submit" class="botao">Gravar permissoes</button>
+                <a class="botao secundario" th:href="@{/papeis}">Cancelar</a>
+            </div>
+        </form>
+    </div>
+
+</th:block>
+</body>
+</html>

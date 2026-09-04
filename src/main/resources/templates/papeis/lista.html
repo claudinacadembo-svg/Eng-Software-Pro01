@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="pt" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      th:replace="~{fragments/layout :: pagina('Papeis e permissoes', ~{::conteudo})}">
+<body>
+<th:block th:fragment="conteudo">
+
+    <div class="cabecalho-pagina">
+        <div>
+            <h1>Papeis e permissoes</h1>
+            <p>Matriz do modelo RBAC: cada papel agrega as permissoes concedidas aos seus titulares.</p>
+        </div>
+    </div>
+
+    <div class="cartao">
+        <h2>Papeis definidos</h2>
+        <div class="tabela-envolvente">
+            <table class="tabela">
+                <thead>
+                <tr>
+                    <th>Papel</th>
+                    <th>Descricao</th>
+                    <th>Permissoes</th>
+                    <th></th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="p : ${papeis}">
+                    <td>
+                        <strong th:text="${p.nome}">PAPEL</strong><br>
+                        <span class="texto-suave" th:if="${p.sistema}">papel de sistema</span>
+                    </td>
+                    <td th:text="${p.descricao}">descricao</td>
+                    <td>
+                        <span class="etiqueta permissao" th:each="perm : ${p.permissoes}"
+                              th:text="${perm.codigo}">PERM</span>
+                    </td>
+                    <td>
+                        <div class="accoes">
+                            <a class="botao secundario pequeno" th:href="@{/papeis/{id}/editar(id=${p.id})}"
+                               sec:authorize="hasAuthority('PAPEL_GERIR')">Editar permissoes</a>
+                            <form th:action="@{/papeis/{id}/eliminar(id=${p.id})}" method="post"
+                                  th:unless="${p.sistema}" sec:authorize="hasAuthority('PAPEL_GERIR')"
+                                  onsubmit="return confirm('Eliminar este papel?');">
+                                <button type="submit" class="botao perigo pequeno">Eliminar</button>
+                            </form>
+                        </div>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="cartao" sec:authorize="hasAuthority('PAPEL_GERIR')">
+        <h2>Criar novo papel</h2>
+        <form method="post" th:action="@{/papeis}">
+            <div class="grelha colunas-2">
+                <div class="campo">
+                    <label for="nome">Nome do papel *</label>
+                    <input type="text" id="nome" name="nome" required placeholder="Ex.: RECEPCAO">
+                </div>
+                <div class="campo">
+                    <label for="descricao">Descricao</label>
+                    <input type="text" id="descricao" name="descricao">
+                </div>
+            </div>
+
+            <div class="campo" th:each="entrada : ${permissoesPorModulo}">
+                <label th:text="${entrada.key}">Modulo</label>
+                <div class="opcoes">
+                    <label class="opcao" th:each="perm : ${entrada.value}">
+                        <input type="checkbox" name="permissoesIds" th:value="${perm.id}">
+                        <span>
+                            <span class="mono" th:text="${perm.codigo}">CODIGO</span><br>
+                            <span class="texto-suave" th:text="${perm.descricao}">descricao</span>
+                        </span>
+                    </label>
+                </div>
+            </div>
+
+            <button type="submit" class="botao">Criar papel</button>
+        </form>
+    </div>
+
+</th:block>
+</body>
+</html>

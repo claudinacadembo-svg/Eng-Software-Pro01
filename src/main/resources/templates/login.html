@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="pt" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>SGE | Autenticacao</title>
+    <link rel="stylesheet" th:href="@{/css/estilo.css}">
+</head>
+<body>
+<div class="ecra-login">
+    <div class="caixa-login">
+        <h1>Sistema de Gestao de Expedientes</h1>
+        <p class="subtitulo">UnISCED &middot; Faculdade de Engenharia e Agricultura</p>
+
+        <div class="mensagem erro" th:if="${param.erro}">
+            Credenciais invalidas ou conta desactivada.
+        </div>
+        <div class="mensagem informacao" th:if="${param.terminado}">
+            Sessao terminada com seguranca.
+        </div>
+
+        <form th:action="@{/login}" method="post">
+            <div class="campo">
+                <label for="username">Nome de utilizador</label>
+                <input type="text" id="username" name="username" required autofocus>
+            </div>
+            <div class="campo">
+                <label for="password">Palavra-passe</label>
+                <input type="password" id="password" name="password" required>
+            </div>
+            <button type="submit" class="botao">Entrar</button>
+        </form>
+
+        <div class="contas-demonstracao">
+            <strong>Contas de demonstracao</strong>
+            <table>
+                <tr><td>Administrador</td><td><code>admin</code> / <code>admin123</code></td></tr>
+                <tr><td>Gestor de expedientes</td><td><code>chefe</code> / <code>chefe123</code></td></tr>
+                <tr><td>Tecnico</td><td><code>tecnico</code> / <code>tecnico123</code></td></tr>
+                <tr><td>Auditor</td><td><code>auditor</code> / <code>auditor123</code></td></tr>
+            </table>
+        </div>
+    </div>
+</div>
+</body>
+</html>

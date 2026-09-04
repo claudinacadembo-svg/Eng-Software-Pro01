@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="pt" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      th:replace="~{fragments/layout :: pagina('Utilizadores', ~{::conteudo})}">
+<body>
+<th:block th:fragment="conteudo">
+
+    <div class="cabecalho-pagina">
+        <div>
+            <h1>Utilizadores</h1>
+            <p>Contas do sistema e papeis que lhes estao atribuidos.</p>
+        </div>
+        <a class="botao" th:href="@{/utilizadores/novo}" sec:authorize="hasAuthority('UTILIZADOR_CRIAR')">
+            Novo utilizador</a>
+    </div>
+
+    <div class="cartao">
+        <div class="tabela-envolvente">
+            <table class="tabela">
+                <thead>
+                <tr>
+                    <th>Nome</th>
+                    <th>Utilizador</th>
+                    <th>Email</th>
+                    <th>Departamento</th>
+                    <th>Papeis</th>
+                    <th>Estado</th>
+                    <th>Ultimo acesso</th>
+                    <th></th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="u : ${utilizadores}">
+                    <td th:text="${u.nomeCompleto}">Nome</td>
+                    <td class="mono" th:text="${u.username}">username</td>
+                    <td th:text="${u.email}">email</td>
+                    <td th:text="${u.departamento} ?: '-'">-</td>
+                    <td>
+                        <span class="etiqueta permissao" th:each="p : ${u.papeis}" th:text="${p.nome}">PAPEL</span>
+                    </td>
+                    <td>
+                        <span class="etiqueta despachado" th:if="${u.activo}">Activo</span>
+                        <span class="etiqueta cancelado" th:unless="${u.activo}">Inactivo</span>
+                    </td>
+                    <td th:text="${u.ultimoAcesso != null} ? ${#temporals.format(u.ultimoAcesso, 'dd/MM/yyyy HH:mm')} : '-'">-</td>
+                    <td>
+                        <div class="accoes">
+                            <a class="botao secundario pequeno"
+                               th:href="@{/utilizadores/{id}/editar(id=${u.id})}"
+                               sec:authorize="hasAuthority('UTILIZADOR_ACTUALIZAR')">Editar</a>
+
+                            <form th:action="@{/utilizadores/{id}/activacao(id=${u.id})}" method="post"
+                                  sec:authorize="hasAuthority('UTILIZADOR_ACTUALIZAR')">
+                                <button type="submit" class="botao secundario pequeno"
+                                        th:text="${u.activo} ? 'Desactivar' : 'Activar'">Desactivar</button>
+                            </form>
+
+                            <form th:action="@{/utilizadores/{id}/eliminar(id=${u.id})}" method="post"
+                                  sec:authorize="hasAuthority('UTILIZADOR_ELIMINAR')"
+                                  onsubmit="return confirm('Eliminar este utilizador?');">
+                                <button type="submit" class="botao perigo pequeno">Eliminar</button>
+                            </form>
+                        </div>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+</th:block>
+</body>
+</html>

@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="pt" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{fragments/layout :: pagina('Relatorios', ~{::conteudo})}">
+<body>
+<th:block th:fragment="conteudo">
+
+    <div class="cabecalho-pagina">
+        <div>
+            <h1>Relatorio de expedientes</h1>
+            <p>Indicadores agregados do ciclo de vida dos expedientes.</p>
+        </div>
+        <a class="botao" th:href="@{/relatorios/csv}">Exportar CSV</a>
+    </div>
+
+    <div class="grelha colunas-4">
+        <div class="indicador">
+            <div class="valor" th:text="${relatorio.total}">0</div>
+            <div class="rotulo">Total</div>
+        </div>
+        <div class="indicador">
+            <div class="valor" th:text="${relatorio.emCurso}">0</div>
+            <div class="rotulo">Em curso</div>
+        </div>
+        <div class="indicador">
+            <div class="valor" th:text="${relatorio.arquivados}">0</div>
+            <div class="rotulo">Arquivados</div>
+        </div>
+        <div class="indicador">
+            <div class="valor" th:text="${relatorio.atrasados}">0</div>
+            <div class="rotulo">Fora do prazo</div>
+        </div>
+    </div>
+
+    <div class="grelha colunas-2" style="margin-top: 20px;">
+        <div class="cartao">
+            <h2>Por estado</h2>
+            <div th:if="${relatorio.total == 0}" class="vazio">Sem dados.</div>
+            <div th:each="entrada : ${relatorio.porEstado}" style="margin-bottom: 12px;">
+                <div th:text="${entrada.key} + ': ' + ${entrada.value}">estado</div>
+                <div class="barra">
+                    <span th:style="'width:' + ${relatorio.total > 0 ? (entrada.value * 100 / relatorio.total) : 0} + '%'"></span>
+                </div>
+            </div>
+        </div>
+
+        <div class="cartao">
+            <h2>Por tipo</h2>
+            <div th:if="${relatorio.total == 0}" class="vazio">Sem dados.</div>
+            <div th:each="entrada : ${relatorio.porTipo}" style="margin-bottom: 12px;">
+                <div th:text="${entrada.key} + ': ' + ${entrada.value}">tipo</div>
+                <div class="barra">
+                    <span th:style="'width:' + ${relatorio.total > 0 ? (entrada.value * 100 / relatorio.total) : 0} + '%'"></span>
+                </div>
+            </div>
+        </div>
+
+        <div class="cartao">
+            <h2>Por prioridade</h2>
+            <div th:if="${relatorio.total == 0}" class="vazio">Sem dados.</div>
+            <div th:each="entrada : ${relatorio.porPrioridade}" style="margin-bottom: 12px;">
+                <div th:text="${entrada.key} + ': ' + ${entrada.value}">prioridade</div>
+                <div class="barra">
+                    <span th:style="'width:' + ${relatorio.total > 0 ? (entrada.value * 100 / relatorio.total) : 0} + '%'"></span>
+                </div>
+            </div>
+        </div>
+
+        <div class="cartao">
+            <h2>Carga por responsavel</h2>
+            <div th:if="${#maps.isEmpty(relatorio.porResponsavel)}" class="vazio">Sem dados.</div>
+            <div class="tabela-envolvente" th:unless="${#maps.isEmpty(relatorio.porResponsavel)}">
+                <table class="tabela">
+                    <thead><tr><th>Responsavel</th><th>Expedientes</th></tr></thead>
+                    <tbody>
+                    <tr th:each="entrada : ${relatorio.porResponsavel}">
+                        <td th:text="${entrada.key}">nome</td>
+                        <td th:text="${entrada.value}">0</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+</th:block>
+</body>
+</html>

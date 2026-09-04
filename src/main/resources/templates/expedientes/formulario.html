@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="pt" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{fragments/layout :: pagina('Expediente', ~{::conteudo})}">
+<body>
+<th:block th:fragment="conteudo">
+
+    <div class="cabecalho-pagina">
+        <div>
+            <h1 th:text="${expediente.id == null} ? 'Registar expediente' : 'Editar expediente'">Expediente</h1>
+            <p th:if="${expediente.id != null}" class="mono" th:text="${expediente.numeroRegisto}">EXP</p>
+            <p th:if="${expediente.id == null}">O numero de registo e atribuido automaticamente pelo sistema.</p>
+        </div>
+        <a class="botao secundario" th:href="@{/expedientes}">Voltar</a>
+    </div>
+
+    <div class="cartao">
+        <form method="post"
+              th:action="${expediente.id == null} ? @{/expedientes} : @{/expedientes/{id}(id=${expediente.id})}"
+              th:object="${expediente}">
+
+            <div class="grelha colunas-2">
+                <div class="campo">
+                    <label for="assunto">Assunto *</label>
+                    <input type="text" id="assunto" th:field="*{assunto}" required maxlength="200">
+                    <div class="erro-campo" th:if="${#fields.hasErrors('assunto')}" th:errors="*{assunto}"></div>
+                </div>
+
+                <div class="campo">
+                    <label for="remetente">Remetente / origem *</label>
+                    <input type="text" id="remetente" th:field="*{remetente}" required maxlength="150">
+                    <div class="erro-campo" th:if="${#fields.hasErrors('remetente')}" th:errors="*{remetente}"></div>
+                </div>
+            </div>
+
+            <div class="campo">
+                <label for="descricao">Descricao</label>
+                <textarea id="descricao" th:field="*{descricao}" maxlength="2000"></textarea>
+            </div>
+
+            <div class="grelha colunas-3">
+                <div class="campo">
+                    <label for="tipo">Tipo *</label>
+                    <select id="tipo" th:field="*{tipo}">
+                        <option th:each="t : ${tipos}" th:value="${t.name()}" th:text="${t.descricao}"></option>
+                    </select>
+                </div>
+
+                <div class="campo">
+                    <label for="prioridade">Prioridade *</label>
+                    <select id="prioridade" th:field="*{prioridade}">
+                        <option th:each="p : ${prioridades}" th:value="${p.name()}" th:text="${p.descricao}"></option>
+                    </select>
+                </div>
+
+                <div class="campo">
+                    <label for="confidencialidade">Confidencialidade *</label>
+                    <select id="confidencialidade" th:field="*{confidencialidade}">
+                        <option th:each="c : ${confidencialidades}" th:value="${c.name()}"
+                                th:text="${c.descricao}"></option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="grelha colunas-2">
+                <div class="campo">
+                    <label for="destinatarioExterno">Destinatario externo</label>
+                    <input type="text" id="destinatarioExterno" th:field="*{destinatarioExterno}" maxlength="150">
+                </div>
+
+                <div class="campo">
+                    <label for="prazo">Prazo de resposta</label>
+                    <input type="date" id="prazo" th:field="*{prazo}">
+                </div>
+            </div>
+
+            <p class="texto-suave">
+                Os expedientes marcados como confidenciais ficam visiveis apenas ao autor, ao responsavel
+                actual, ao administrador e aos utilizadores com permissao de auditoria.
+            </p>
+
+            <div class="accoes">
+                <button type="submit" class="botao">Gravar</button>
+                <a class="botao secundario" th:href="@{/expedientes}">Cancelar</a>
+            </div>
+        </form>
+    </div>
+
+</th:block>
+</body>
+</html>

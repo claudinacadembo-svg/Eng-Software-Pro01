@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="pt" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{fragments/layout :: pagina('Auditoria', ~{::conteudo})}">
+<body>
+<th:block th:fragment="conteudo">
+
+    <div class="cabecalho-pagina">
+        <div>
+            <h1>Registos de auditoria</h1>
+            <p>Rastreabilidade de todas as accoes do sistema, incluindo tentativas de acesso negadas.</p>
+        </div>
+    </div>
+
+    <div class="grelha colunas-3">
+        <div class="indicador">
+            <div class="valor" th:text="${totalRegistos}">0</div>
+            <div class="rotulo">Registos de auditoria</div>
+        </div>
+        <div class="indicador">
+            <div class="valor" th:text="${acessosNegados}">0</div>
+            <div class="rotulo">Ocorrencias sem sucesso</div>
+        </div>
+        <div class="indicador">
+            <div class="valor" th:text="${pagina.totalElements}">0</div>
+            <div class="rotulo">Resultados do filtro</div>
+        </div>
+    </div>
+
+    <div class="cartao" style="margin-top: 20px;">
+        <form class="filtros" method="get" th:action="@{/auditoria}">
+            <div class="campo">
+                <label for="username">Utilizador</label>
+                <input type="text" id="username" name="username" th:value="${username}">
+            </div>
+            <div class="campo">
+                <label for="accao">Accao</label>
+                <select id="accao" name="accao">
+                    <option value="">Todas</option>
+                    <option th:each="a : ${accoes}" th:value="${a}" th:text="${a}"
+                            th:selected="${a == accaoSeleccionada}"></option>
+                </select>
+            </div>
+            <div class="campo">
+                <label for="inicio">De</label>
+                <input type="date" id="inicio" name="inicio" th:value="${inicio}">
+            </div>
+            <div class="campo">
+                <label for="fim">Ate</label>
+                <input type="date" id="fim" name="fim" th:value="${fim}">
+            </div>
+            <div class="accoes">
+                <button type="submit" class="botao">Filtrar</button>
+                <a class="botao secundario" th:href="@{/auditoria}">Limpar</a>
+            </div>
+        </form>
+    </div>
+
+    <div class="cartao">
+        <div class="vazio" th:if="${pagina.totalElements == 0}">Sem registos para os criterios indicados.</div>
+
+        <div class="tabela-envolvente" th:if="${pagina.totalElements > 0}">
+            <table class="tabela">
+                <thead>
+                <tr>
+                    <th>Data e hora</th>
+                    <th>Utilizador</th>
+                    <th>Accao</th>
+                    <th>Entidade</th>
+                    <th>Detalhe</th>
+                    <th>Origem</th>
+                    <th>Resultado</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="l : ${pagina.content}">
+                    <td th:text="${#temporals.format(l.dataHora, 'dd/MM/yyyy HH:mm:ss')}">data</td>
+                    <td class="mono" th:text="${l.username}">username</td>
+                    <td><span class="etiqueta permissao" th:text="${l.accao}">ACCAO</span></td>
+                    <td>
+                        <span th:text="${l.entidade} ?: '-'">-</span>
+                        <span class="texto-suave" th:if="${l.entidadeId}" th:text="'#' + ${l.entidadeId}"></span>
+                    </td>
+                    <td th:text="${l.detalhe} ?: '-'">-</td>
+                    <td class="mono" th:text="${l.enderecoIp} ?: '-'">-</td>
+                    <td>
+                        <span class="etiqueta despachado" th:if="${l.sucesso}">Sucesso</span>
+                        <span class="etiqueta cancelado" th:unless="${l.sucesso}">Negado</span>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="paginacao" th:if="${pagina.totalPages > 1}">
+            <a th:if="${!pagina.first}"
+               th:href="@{/auditoria(username=${username},accao=${accaoSeleccionada},inicio=${inicio},fim=${fim},pagina=${pagina.number - 1})}">Anterior</a>
+            <span class="actual" th:text="(${pagina.number} + 1) + ' / ' + ${pagina.totalPages}">1 / 1</span>
+            <a th:if="${!pagina.last}"
+               th:href="@{/auditoria(username=${username},accao=${accaoSeleccionada},inicio=${inicio},fim=${fim},pagina=${pagina.number + 1})}">Seguinte</a>
+        </div>
+    </div>
+
+</th:block>
+</body>
+</html>

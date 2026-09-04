@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="pt" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{fragments/layout :: pagina('Acesso negado', ~{::conteudo})}">
+<body>
+<th:block th:fragment="conteudo">
+
+    <div class="cartao" style="max-width: 620px; margin: 40px auto; text-align: center;">
+        <h1 style="font-size: 20px; color: var(--cor-erro);">Acesso negado</h1>
+        <p>
+            A sua conta nao tem a permissao necessaria para aceder a este recurso.
+            A tentativa foi registada nos registos de auditoria do sistema.
+        </p>
+        <p class="texto-suave">
+            Se considera que deveria ter acesso, contacte o administrador para rever os papeis atribuidos.
+        </p>
+        <a class="botao" th:href="@{/}">Voltar ao painel</a>
+    </div>
+
+</th:block>
+</body>
+</html>
