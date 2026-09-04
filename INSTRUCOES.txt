@@ -1,0 +1,235 @@
+﻿==============================================================================
+  SGE - SISTEMA DE GESTÃO DE EXPEDIENTES COM RBAC
+  Instruções de execução em Windows
+==============================================================================
+
+  Trabalho de Campo de Engenharia de Software
+  Universidade Aberta ISCED (UnISCED)
+  Faculdade de Engenharia e Agricultura
+  Curso de Licenciatura em Engenharia Informática
+
+  Repositório: https://github.com/claudinacadembo-svg/Eng-Software-Pro01
+
+
+------------------------------------------------------------------------------
+1. O QUE É PRECISO TER INSTALADO
+------------------------------------------------------------------------------
+
+  Apenas o Java (JDK) versão 17 ou superior.
+
+  NÃO é preciso instalar o Maven -> já vem incluído no projecto (mvnw.cmd).
+  NÃO é preciso instalar base de dados -> o sistema usa H2 em ficheiro.
+
+  Para confirmar que o Java está instalado, abra o Menu Iniciar, escreva
+  "cmd", abra a Linha de Comandos e escreva:
+
+      java -version
+
+  Deve aparecer algo como:  java version "20.0.1"
+
+  Se aparecer "java não é reconhecido", instale o JDK a partir de
+  https://adoptium.net (escolha a versão 17 ou superior, Windows x64) e
+  volte a abrir a consola.
+
+
+------------------------------------------------------------------------------
+2. OBTER O PROJECTO
+------------------------------------------------------------------------------
+
+  Se já tem a pasta do projecto no computador, avance para o ponto 3.
+
+  Caso contrário, abra a Linha de Comandos e escreva:
+
+      git clone https://github.com/claudinacadembo-svg/Eng-Software-Pro01.git
+
+  Em alternativa, descarregue o ZIP a partir do GitHub, no botão verde
+  "Code" -> "Download ZIP", e extraia-o para uma pasta à sua escolha.
+
+
+------------------------------------------------------------------------------
+3. ABRIR A CONSOLA NA PASTA DO PROJECTO
+------------------------------------------------------------------------------
+
+  Forma mais simples:
+
+    1. Abra o Explorador de Ficheiros e entre na pasta do projecto
+       (a pasta que contém os ficheiros pom.xml e mvnw.cmd).
+
+    2. Clique na barra de endereço do Explorador, apague o que lá estiver,
+       escreva  cmd  e pressione ENTER.
+
+    3. Abre-se a Linha de Comandos já dentro da pasta certa.
+
+  Em alternativa, abra a Linha de Comandos e mude de pasta à mão:
+
+      cd D:\CLAUDINA-TRBS\PROJECTO-ESW
+
+
+------------------------------------------------------------------------------
+4. EXECUTAR O SISTEMA
+------------------------------------------------------------------------------
+
+  Escreva o comando correspondente à consola que está a usar:
+
+  >> Se está na LINHA DE COMANDOS (cmd):
+
+      mvnw.cmd spring-boot:run
+
+  >> Se está no POWERSHELL (a janela azul):
+
+      .\mvnw.cmd spring-boot:run
+
+      IMPORTANTE: no PowerShell o  .\  no início é obrigatório. Sem ele
+      aparece a mensagem "mvnw.cmd não é reconhecido".
+
+  A PRIMEIRA execução demora alguns minutos, porque são descarregadas as
+  bibliotecas necessárias (só nesta primeira vez é preciso ligação à
+  Internet). Nas execuções seguintes o arranque leva poucos segundos.
+
+  Espere até aparecer na consola uma linha parecida com esta:
+
+      Started SgeApplication in 21.086 seconds
+
+  A partir desse momento o sistema está a funcionar. Deixe esta janela
+  aberta enquanto estiver a usar o sistema.
+
+
+------------------------------------------------------------------------------
+5. ABRIR O SISTEMA NO NAVEGADOR
+------------------------------------------------------------------------------
+
+  Abra o Google Chrome, o Edge ou o Firefox e escreva o endereço:
+
+      http://localhost:8080
+
+  Deve aparecer o ecrã de autenticação do SGE.
+
+
+------------------------------------------------------------------------------
+6. CONTAS PARA ENTRAR NO SISTEMA
+------------------------------------------------------------------------------
+
+  Estas contas são criadas automaticamente no primeiro arranque e servem
+  para demonstrar o controlo de acesso baseado em papéis (RBAC).
+
+  UTILIZADOR   PALAVRA-PASSE   PAPEL                O QUE PODE FAZER
+  ----------   -------------   ------------------   -------------------------
+  admin        admin123        ADMINISTRADOR        Tudo: gerir utilizadores,
+                                                    papéis e permissões
+  chefe        chefe123        GESTOR_EXPEDIENTE    Registar, tramitar,
+                                                    despachar e arquivar
+  tecnico      tecnico123      TECNICO              Registar e encaminhar
+                                                    (não pode despachar)
+  auditor      auditor123      AUDITOR              Só leitura: expedientes,
+                                                    auditoria e relatórios
+
+  SUGESTÃO PARA A DEMONSTRAÇÃO:
+
+    1. Entre como "tecnico" e repare que o menu lateral só mostra Painel e
+       Expedientes, e que o expediente confidencial não aparece na lista.
+
+    2. Escreva na barra de endereço  http://localhost:8080/utilizadores
+       e verá a página de ACESSO NEGADO.
+
+    3. Entre como "chefe" e faça o ciclo completo de um expediente:
+       Encaminhar -> Despachar -> Arquivar.
+
+    4. Entre como "auditor" e veja, no ecrã de Auditoria, todas as acções
+       anteriores registadas, incluindo a tentativa de acesso negada.
+
+
+------------------------------------------------------------------------------
+7. PARAR O SISTEMA
+------------------------------------------------------------------------------
+
+  Vá à janela da consola onde a aplicação está a correr e pressione:
+
+      CTRL + C
+
+  Se perguntar "Terminar o trabalho por lotes (S/N)?", escreva S e
+  pressione ENTER.
+
+
+------------------------------------------------------------------------------
+8. OUTRAS FORMAS DE EXECUTAR (OPCIONAL)
+------------------------------------------------------------------------------
+
+  a) Gerar um ficheiro executável e corrê-lo:
+
+        mvnw.cmd package -DskipTests
+        java -jar target\sge-1.0.0.jar
+
+  b) Mudar a porta, caso a 8080 já esteja ocupada por outro programa:
+
+        mvnw.cmd spring-boot:run "-Dspring-boot.run.arguments=--server.port=9090"
+
+     Depois abra:  http://localhost:9090
+
+  c) Executar os testes automáticos do controlo de acesso:
+
+        mvnw.cmd test
+
+     No fim deve aparecer:  Tests run: 10, Failures: 0, Errors: 0
+
+
+------------------------------------------------------------------------------
+9. BASE DE DADOS
+------------------------------------------------------------------------------
+
+  Os dados ficam guardados no ficheiro:
+
+      data\sge.mv.db
+
+  criado dentro da pasta do projecto. Não é preciso configurar nada.
+
+  Para recomeçar do zero (apagar todos os expedientes e voltar aos dados de
+  exemplo): pare a aplicação, apague a pasta  data  e volte a arrancar.
+
+  Consola da base de dados (só para o utilizador "admin", com a aplicação
+  a correr):
+
+      http://localhost:8080/h2-console
+
+      JDBC URL:       jdbc:h2:file:./data/sge
+      Utilizador:     sa
+      Palavra-passe:  (deixar vazio)
+
+
+------------------------------------------------------------------------------
+10. PROBLEMAS FREQUENTES
+------------------------------------------------------------------------------
+
+  PROBLEMA: "mvnw.cmd não é reconhecido como um comando interno ou externo"
+  CAUSA:    Ou não está na pasta certa, ou está no PowerShell sem o .\
+  SOLUÇÃO:  Confirme que a pasta contém o ficheiro mvnw.cmd (comando: dir)
+            e, no PowerShell, use  .\mvnw.cmd spring-boot:run
+
+  PROBLEMA: "java não é reconhecido como um comando interno ou externo"
+  CAUSA:    O JDK não está instalado ou não está na variável PATH.
+  SOLUÇÃO:  Instale o JDK 17 ou superior a partir de https://adoptium.net
+            e volte a abrir a consola.
+
+  PROBLEMA: "Web server failed to start. Port 8080 was already in use"
+  CAUSA:    Já existe outro programa (ou outra cópia do SGE) na porta 8080.
+  SOLUÇÃO:  Feche a outra janela da consola, ou arranque noutra porta
+            conforme o ponto 8-b.
+
+  PROBLEMA: O arranque falha a descarregar bibliotecas.
+  CAUSA:    Sem ligação à Internet na primeira execução.
+  SOLUÇÃO:  Ligue-se à Internet e repita o comando. A partir da segunda vez
+            deixa de ser necessário.
+
+  PROBLEMA: A página abre sem cores nem formatação.
+  CAUSA:    A folha de estilo ficou em cache no navegador.
+  SOLUÇÃO:  Pressione CTRL + F5 para recarregar a página.
+
+
+------------------------------------------------------------------------------
+11. ONDE ESTÁ A RESTANTE DOCUMENTAÇÃO
+------------------------------------------------------------------------------
+
+  README.md                          Documentação completa do projecto
+  docs\Relatorio-SGE-UnISCED.docx    Relatório técnico do trabalho
+  docs\diagramas\                    Diagramas UML e modelo entidade-relação
+
+==============================================================================
