@@ -1,0 +1,57 @@
+@startuml
+!pragma layout smetana
+!include _estilo.txt
+
+skinparam sequence {
+    ArrowColor #000000
+    LifeLineBorderColor #000000
+    LifeLineBackgroundColor #FFFFFF
+    ParticipantBorderColor #000000
+    ParticipantBackgroundColor #FFFFFF
+    ActorBorderColor #000000
+    ActorBackgroundColor #FFFFFF
+    BoxBorderColor #000000
+}
+
+autonumber "<b>0."
+
+actor "Tecnico" as U
+participant "Interface\n(Thymeleaf)" as V
+participant "ExpedienteController" as C
+participant "Spring Security\n(@PreAuthorize)" as S
+participant "ExpedienteService" as SV
+participant "ExpedienteRepository" as R
+participant "AuditoriaService" as A
+database "Base de dados" as DB
+
+U -> V : preenche o formulario
+V -> C : POST /expedientes
+C -> SV : criar(expediente, autor)
+SV -> S : verificar EXPEDIENTE_CRIAR
+
+alt permissao concedida
+    S --> SV : autorizado
+    SV -> R : maiorNumeroRegistoComPrefixo()
+    R -> DB : SELECT
+    DB --> R : ultimo numero
+    R --> SV : EXP-2026-0004
+    SV -> SV : definir estado REGISTADO\ne tramitacao inicial
+    SV -> R : save(expediente)
+    R -> DB : INSERT expediente\nINSERT tramitacao
+    DB --> R : id gerado
+    R --> SV : expediente gravado
+    SV -> A : registar(EXPEDIENTE_CRIADO)
+    A -> DB : INSERT log_auditoria
+    SV --> C : expediente
+    C --> V : redireccionar para o detalhe
+    V --> U : "Expediente EXP-2026-0004 registado"
+else permissao negada
+    S --> SV : AccessDeniedException
+    SV --> C : excepcao propagada
+    C -> A : registarFalha(ACESSO_NEGADO)
+    A -> DB : INSERT log_auditoria
+    C --> V : redireccionar para /acesso-negado
+    V --> U : "Acesso negado"
+end
+
+@enduml

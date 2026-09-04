@@ -1,0 +1,76 @@
+@startuml
+!pragma layout smetana
+!include _estilo.txt
+
+skinparam activity {
+    BorderColor #000000
+    BackgroundColor #FFFFFF
+    DiamondBorderColor #000000
+    DiamondBackgroundColor #FFFFFF
+}
+skinparam swimlane {
+    BorderColor #000000
+    TitleFontStyle bold
+}
+
+|Utilizador|
+start
+:Submeter credenciais;
+
+|Sistema|
+if (Credenciais validas?) then (nao)
+    :Registar LOGIN_FALHADO
+     na auditoria;
+    stop
+else (sim)
+    :Carregar papeis e permissoes;
+    :Registar LOGIN_SUCESSO
+     na auditoria;
+endif
+
+|Utilizador|
+:Preencher dados
+ do novo expediente;
+
+|Sistema|
+if (Tem a permissao
+EXPEDIENTE_CRIAR?) then (nao)
+    :Registar ACESSO_NEGADO
+     e apresentar
+     pagina de recusa;
+    stop
+else (sim)
+endif
+
+:Gerar numero EXP-AAAA-NNNN
+ e gravar no estado REGISTADO;
+:Criar tramitacao inicial
+ e registar em auditoria;
+
+|Utilizador|
+if (Accao seguinte?) then ([tramitar])
+    |Sistema|
+    :Verificar EXPEDIENTE_TRAMITAR,
+     mudar responsavel e estado
+     para EM_TRAMITACAO;
+    :Registar movimento
+     no historial;
+    detach
+else ([despachar])
+    |Sistema|
+    :Verificar EXPEDIENTE_DESPACHAR,
+     gravar decisao e mudar
+     estado para DESPACHADO;
+endif
+
+|Utilizador|
+:Solicitar arquivo;
+
+|Sistema|
+:Verificar EXPEDIENTE_ARQUIVAR
+ e mudar estado para ARQUIVADO;
+:Registar EXPEDIENTE_ARQUIVADO
+ na auditoria;
+stop
+
+@enduml

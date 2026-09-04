@@ -1,0 +1,134 @@
+@startuml
+!pragma layout smetana
+!include _estilo.txt
+
+skinparam class {
+    BorderColor #000000
+    BackgroundColor #FFFFFF
+    AttributeFontSize 11
+}
+
+hide circle
+hide methods
+skinparam linetype ortho
+
+entity "utilizador" as utilizador {
+    * id : BIGINT <<PK>>
+    --
+    * username : VARCHAR(40) <<UK>>
+    * nome_completo : VARCHAR(120)
+    * email : VARCHAR(120) <<UK>>
+    * palavra_passe : VARCHAR(120)
+    departamento : VARCHAR(80)
+    * activo : BOOLEAN
+    * data_criacao : TIMESTAMP
+    ultimo_acesso : TIMESTAMP
+}
+
+entity "papel" as papel {
+    * id : BIGINT <<PK>>
+    --
+    * nome : VARCHAR(40) <<UK>>
+    * descricao : VARCHAR(150)
+    * sistema : BOOLEAN
+}
+
+entity "permissao" as permissao {
+    * id : BIGINT <<PK>>
+    --
+    * codigo : VARCHAR(60) <<UK>>
+    * descricao : VARCHAR(150)
+    * modulo : VARCHAR(40)
+}
+
+entity "utilizador_papel" as utilizador_papel {
+    * utilizador_id : BIGINT <<PK,FK>>
+    * papel_id : BIGINT <<PK,FK>>
+}
+
+entity "papel_permissao" as papel_permissao {
+    * papel_id : BIGINT <<PK,FK>>
+    * permissao_id : BIGINT <<PK,FK>>
+}
+
+entity "expediente" as expediente {
+    * id : BIGINT <<PK>>
+    --
+    * numero_registo : VARCHAR(20) <<UK>>
+    * assunto : VARCHAR(200)
+    descricao : VARCHAR(2000)
+    * tipo : VARCHAR(20)
+    * prioridade : VARCHAR(20)
+    * confidencialidade : VARCHAR(20)
+    * estado : VARCHAR(20)
+    * remetente : VARCHAR(150)
+    destinatario_externo : VARCHAR(150)
+    * criado_por_id : BIGINT <<FK>>
+    responsavel_id : BIGINT <<FK>>
+    * data_registo : TIMESTAMP
+    data_actualizacao : TIMESTAMP
+    prazo : DATE
+}
+
+entity "tramitacao" as tramitacao {
+    * id : BIGINT <<PK>>
+    --
+    * expediente_id : BIGINT <<FK>>
+    * tipo : VARCHAR(20)
+    origem_id : BIGINT <<FK>>
+    destino_id : BIGINT <<FK>>
+    observacao : VARCHAR(1000)
+    estado_resultante : VARCHAR(20)
+    * data_movimento : TIMESTAMP
+}
+
+entity "despacho" as despacho {
+    * id : BIGINT <<PK>>
+    --
+    * expediente_id : BIGINT <<FK>>
+    * autor_id : BIGINT <<FK>>
+    * decisao : VARCHAR(20)
+    * texto : VARCHAR(1500)
+    * data_despacho : TIMESTAMP
+}
+
+entity "anexo" as anexo {
+    * id : BIGINT <<PK>>
+    --
+    * expediente_id : BIGINT <<FK>>
+    * nome_ficheiro : VARCHAR(200)
+    * tipo_conteudo : VARCHAR(120)
+    * tamanho : BIGINT
+    * conteudo : BLOB
+    * carregado_por_id : BIGINT <<FK>>
+    * data_carregamento : TIMESTAMP
+}
+
+entity "log_auditoria" as log_auditoria {
+    * id : BIGINT <<PK>>
+    --
+    * data_hora : TIMESTAMP
+    * username : VARCHAR(40)
+    * accao : VARCHAR(60)
+    entidade : VARCHAR(40)
+    entidade_id : BIGINT
+    detalhe : VARCHAR(500)
+    endereco_ip : VARCHAR(45)
+    * sucesso : BOOLEAN
+}
+
+utilizador ||--o{ utilizador_papel
+papel ||--o{ utilizador_papel
+papel ||--o{ papel_permissao
+permissao ||--o{ papel_permissao
+
+utilizador ||--o{ expediente : regista
+utilizador ||--o{ expediente : e responsavel
+expediente ||--o{ tramitacao
+expediente ||--o{ despacho
+expediente ||--o{ anexo
+utilizador ||--o{ despacho : profere
+utilizador ||--o{ anexo : carrega
+utilizador ||--o{ tramitacao : origem/destino
+
+@enduml

@@ -1,0 +1,62 @@
+@startuml
+!pragma layout smetana
+!include _estilo.txt
+
+skinparam usecase {
+    BorderColor #000000
+    BackgroundColor #FFFFFF
+}
+skinparam actor {
+    BorderColor #000000
+    BackgroundColor #FFFFFF
+}
+skinparam nodesep 20
+skinparam ranksep 70
+
+skinparam titleFontSize 18
+title <color:#FFFFFF>.</color>
+
+left to right direction
+
+actor "Tecnico" as TEC
+actor "Gestor de\nExpedientes" as GES
+actor "Administrador" as ADM
+actor "Auditor" as AUD
+
+GES --|> TEC
+
+rectangle "Sistema de Gestao de Expedientes" {
+    usecase "Autenticar-se" as UC01
+    usecase "Alterar\npalavra-passe" as UC02
+    usecase "Consultar\nexpediente" as UC04
+    usecase "Registar\nexpediente" as UC03
+    usecase "Anexar\ndocumento" as UC05
+    usecase "Tramitar\nexpediente" as UC06
+    usecase "Despachar\nexpediente" as UC07
+    usecase "Arquivar\nexpediente" as UC08
+    usecase "Gerar\nrelatorios" as UC12
+    usecase "Gerir\nutilizadores" as UC09
+    usecase "Gerir papeis\ne permissoes" as UC10
+    usecase "Consultar\nauditoria" as UC11
+}
+
+TEC --> UC01
+TEC --> UC02
+TEC --> UC04
+TEC --> UC03
+TEC --> UC05
+TEC --> UC06
+
+GES --> UC07
+GES --> UC08
+GES --> UC12
+
+ADM --> UC09
+ADM --> UC10
+
+AUD --> UC11
+AUD --> UC12
+
+UC06 ..> UC04 : <<include>>
+
+@enduml

@@ -1,0 +1,153 @@
+@startuml
+!pragma layout smetana
+!include _estilo.txt
+
+skinparam class {
+    BorderColor #000000
+    BackgroundColor #FFFFFF
+    AttributeFontSize 11
+}
+
+hide circle
+skinparam classAttributeIconSize 0
+
+class Utilizador {
+    - id : Long
+    - username : String
+    - nomeCompleto : String
+    - email : String
+    - palavraPasse : String
+    - departamento : String
+    - activo : boolean
+    - dataCriacao : LocalDateTime
+    - ultimoAcesso : LocalDateTime
+    + temPermissao(codigo) : boolean
+    + temPapel(nome) : boolean
+}
+
+class Papel {
+    - id : Long
+    - nome : String
+    - descricao : String
+    - sistema : boolean
+    + temPermissao(codigo) : boolean
+}
+
+class Permissao {
+    - id : Long
+    - codigo : String
+    - descricao : String
+    - modulo : String
+}
+
+class Expediente {
+    - id : Long
+    - numeroRegisto : String
+    - assunto : String
+    - descricao : String
+    - remetente : String
+    - destinatarioExterno : String
+    - dataRegisto : LocalDateTime
+    - dataActualizacao : LocalDateTime
+    - prazo : LocalDate
+    + isEditavel() : boolean
+    + isAtrasado() : boolean
+    + adicionarTramitacao(t)
+    + adicionarDespacho(d)
+    + adicionarAnexo(a)
+}
+
+class Tramitacao {
+    - id : Long
+    - observacao : String
+    - dataMovimento : LocalDateTime
+}
+
+class Despacho {
+    - id : Long
+    - texto : String
+    - dataDespacho : LocalDateTime
+}
+
+class Anexo {
+    - id : Long
+    - nomeFicheiro : String
+    - tipoConteudo : String
+    - tamanho : long
+    - conteudo : byte[]
+    - dataCarregamento : LocalDateTime
+}
+
+class LogAuditoria {
+    - id : Long
+    - dataHora : LocalDateTime
+    - username : String
+    - accao : String
+    - entidade : String
+    - entidadeId : Long
+    - detalhe : String
+    - enderecoIp : String
+    - sucesso : boolean
+}
+
+enum EstadoExpediente {
+    REGISTADO
+    EM_TRAMITACAO
+    DESPACHADO
+    ARQUIVADO
+    CANCELADO
+}
+
+enum TipoExpediente {
+    ENTRADA
+    SAIDA
+    INTERNO
+}
+
+enum NivelConfidencialidade {
+    PUBLICO
+    RESTRITO
+    CONFIDENCIAL
+}
+
+enum Prioridade {
+    NORMAL
+    URGENTE
+    MUITO_URGENTE
+}
+
+enum TipoMovimento {
+    REGISTO
+    ENCAMINHAMENTO
+    DESPACHO
+    ARQUIVAMENTO
+    CANCELAMENTO
+}
+
+enum DecisaoDespacho {
+    DEFERIDO
+    INDEFERIDO
+    ENCAMINHADO
+}
+
+Utilizador "*" -- "*" Papel : possui >
+Papel "*" -- "*" Permissao : concede >
+
+Expediente "1" *-- "*" Tramitacao : historial >
+Expediente "1" *-- "*" Despacho : decisoes >
+Expediente "1" *-- "*" Anexo : documentos >
+
+Utilizador "1" -- "*" Expediente : regista >
+Utilizador "0..1" -- "*" Expediente : e responsavel por >
+Utilizador "1" -- "*" Despacho : profere >
+Utilizador "1" -- "*" Tramitacao : origem/destino >
+Utilizador ..> LogAuditoria : gera >
+
+Expediente --> EstadoExpediente
+Expediente --> TipoExpediente
+Expediente --> NivelConfidencialidade
+Expediente --> Prioridade
+Tramitacao --> TipoMovimento
+Despacho --> DecisaoDespacho
+
+@enduml

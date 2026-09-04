@@ -1,0 +1,66 @@
+@startuml
+!pragma layout smetana
+!include _estilo.txt
+
+skinparam component {
+    BorderColor #000000
+    BackgroundColor #FFFFFF
+}
+skinparam package {
+    BorderColor #000000
+    BackgroundColor #FFFFFF
+}
+skinparam rectangle {
+    BorderColor #000000
+    BackgroundColor #FFFFFF
+}
+
+actor "Utilizador" as U
+
+rectangle "Camada de Apresentacao" as APR {
+    component "Templates Thymeleaf\n(sec:authorize)" as T
+    component "Controladores MVC\n(web)" as C
+}
+
+rectangle "Camada de Seguranca (transversal)" as SEG {
+    component "SecurityConfig\nautorizacao por URL" as SC
+    component "UtilizadorAutenticado\npapeis -> autoridades" as UA
+    component "@PreAuthorize\nautorizacao por metodo" as PA
+}
+
+rectangle "Camada de Servico" as SRV {
+    component "ExpedienteService" as ES
+    component "UtilizadorService" as US
+    component "PapelService" as PS
+    component "AuditoriaService" as AS
+    component "RelatorioService" as RS
+}
+
+rectangle "Camada de Acesso a Dados" as DAT {
+    component "Repositorios\nSpring Data JPA" as REP
+}
+
+database "Base de dados\nrelacional (H2)" as DB
+
+U --> T
+T --> C
+C --> SC
+SC --> UA
+C --> ES
+C --> US
+C --> PS
+C --> RS
+ES --> PA
+US --> PA
+PS --> PA
+ES --> REP
+US --> REP
+PS --> REP
+RS --> REP
+AS --> REP
+ES --> AS
+US --> AS
+PS --> AS
+REP --> DB
+
+@enduml

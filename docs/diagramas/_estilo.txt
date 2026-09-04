@@ -1,0 +1,8 @@
+skinparam monochrome true
+skinparam shadowing false
+skinparam backgroundColor #FFFFFF
+skinparam defaultFontName Arial
+skinparam defaultFontSize 12
+skinparam dpi 150
+skinparam roundCorner 4
+skinparam ArrowColor #000000
