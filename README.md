@@ -73,11 +73,23 @@ cd Eng-Software-Pro01
 
 ### 3.3. Executar
 
-**Windows (PowerShell ou CMD):**
+Abrir uma consola **dentro da pasta do projecto** e correr:
+
+**Windows — PowerShell:**
+
+```powershell
+.\mvnw.cmd spring-boot:run
+```
+
+**Windows — Linha de comandos (CMD):**
 
 ```bat
 mvnw.cmd spring-boot:run
 ```
+
+> No PowerShell o prefixo `.\` é obrigatório: sem ele a consola responde
+> *"mvnw.cmd não é reconhecido"*, porque o PowerShell não procura programas na
+> pasta actual.
 
 **Linux / macOS:**
 
@@ -85,16 +97,24 @@ mvnw.cmd spring-boot:run
 ./mvnw spring-boot:run
 ```
 
-Em alternativa, gerar e correr o executável:
+A primeira execução demora mais tempo, porque o Maven descarrega as
+dependências. Quando aparecer a linha `Started SgeApplication`, abrir o
+navegador em **<http://localhost:8080>**.
 
-```bash
-mvnw.cmd package -DskipTests
+Para parar a aplicação: `Ctrl + C` na consola onde ficou a correr.
+
+Em alternativa, gerar e correr o ficheiro executável:
+
+```powershell
+.\mvnw.cmd package -DskipTests
 java -jar target/sge-1.0.0.jar
 ```
 
-Depois abrir o navegador em **<http://localhost:8080>**.
+Para mudar a porta (se a 8080 estiver ocupada):
 
-Para mudar a porta: `mvnw.cmd spring-boot:run -Dspring-boot.run.arguments=--server.port=9090`
+```powershell
+.\mvnw.cmd spring-boot:run "-Dspring-boot.run.arguments=--server.port=9090"
+```
 
 ### 3.4. Contas de demonstração
 
@@ -122,9 +142,11 @@ utilizador `sa`, palavra-passe vazia.
 
 ### 3.6. Executar os testes
 
-```bash
-mvnw.cmd test
+```powershell
+.\mvnw.cmd test
 ```
+
+(Em Linux/macOS: `./mvnw test`.)
 
 São 10 testes automáticos que verificam as regras de RBAC (quem tem e quem não
 tem acesso a cada funcionalidade), a regra de confidencialidade e a
