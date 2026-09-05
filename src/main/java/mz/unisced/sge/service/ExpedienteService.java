@@ -1,6 +1,7 @@
 package mz.unisced.sge.service;
 
 import java.io.IOException;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.Year;
 import java.util.List;
@@ -37,6 +38,10 @@ public class ExpedienteService {
 
     private static final long TAMANHO_MAXIMO_ANEXO = 5L * 1024 * 1024;
 
+    /** Estados em que o expediente ja esta concluido e deixa de contar para prazos. */
+    private static final List<EstadoExpediente> ESTADOS_FINAIS =
+            List.of(EstadoExpediente.ARQUIVADO, EstadoExpediente.CANCELADO);
+
     private final ExpedienteRepository expedienteRepository;
     private final UtilizadorRepository utilizadorRepository;
     private final AnexoRepository anexoRepository;
@@ -55,15 +60,30 @@ public class ExpedienteService {
     @PreAuthorize("hasAuthority('EXPEDIENTE_LER')")
     @Transactional(readOnly = true)
     public Page<Expediente> pesquisar(String texto, EstadoExpediente estado, TipoExpediente tipo,
-                                      Utilizador corrente, Pageable pageable) {
+                                      boolean apenasAtrasados, Utilizador corrente, Pageable pageable) {
         return expedienteRepository.pesquisar(
                 (texto == null || texto.isBlank()) ? null : texto.trim(),
                 estado,
                 tipo,
+                apenasAtrasados,
+                LocalDate.now(),
+                ESTADOS_FINAIS,
                 podeVerConfidenciais(corrente),
                 NivelConfidencialidade.CONFIDENCIAL,
                 corrente.getId(),
                 pageable);
+    }
+
+    /** Total de expedientes por concluir cujo prazo ja expirou. */
+    @Transactional(readOnly = true)
+    public long totalAtrasados() {
+        return expedienteRepository.contarAtrasados(LocalDate.now(), ESTADOS_FINAIS);
+    }
+
+    /** Expedientes fora de prazo que estao a cargo do utilizador indicado. */
+    @Transactional(readOnly = true)
+    public List<Expediente> atrasadosDe(Utilizador utilizador) {
+        return expedienteRepository.atrasadosDe(utilizador, LocalDate.now(), ESTADOS_FINAIS);
     }
 
     @PreAuthorize("hasAuthority('EXPEDIENTE_LER')")
@@ -82,7 +102,7 @@ public class ExpedienteService {
     @Transactional(readOnly = true)
     public List<Expediente> pendentesDe(Utilizador utilizador) {
         return expedienteRepository.findByResponsavelActualAndEstadoNotInOrderByDataRegistoDesc(
-                utilizador, List.of(EstadoExpediente.ARQUIVADO, EstadoExpediente.CANCELADO));
+                utilizador, ESTADOS_FINAIS);
     }
 
     @PreAuthorize("hasAuthority('EXPEDIENTE_CRIAR')")

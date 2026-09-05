@@ -701,3 +701,48 @@ dl.dados dd {
         grid-template-columns: 1fr;
     }
 }
+
+/* ---------- Controlo de prazos ---------- */
+
+.indicador.alerta {
+    border-left-color: var(--cor-erro);
+}
+
+.indicador.alerta .valor {
+    color: var(--cor-erro);
+}
+
+.cartao.aviso-prazo {
+    border-left: 4px solid var(--cor-erro);
+}
+
+.cartao.aviso-prazo h2 {
+    color: var(--cor-erro);
+}
+
+table.tabela tbody tr.linha-atrasada {
+    background: #fdf5f4;
+}
+
+table.tabela tbody tr.linha-atrasada:hover {
+    background: #fbeceb;
+}
+
+.campo.campo-opcao {
+    display: flex;
+    align-items: flex-end;
+}
+
+.campo.campo-opcao label {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    margin-bottom: 9px;
+    font-weight: 500;
+    cursor: pointer;
+}
+
+.campo.campo-opcao input[type="checkbox"] {
+    width: auto;
+    margin: 0;
+}

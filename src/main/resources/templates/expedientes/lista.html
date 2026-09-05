@@ -41,6 +41,13 @@
                     </option>
                 </select>
             </div>
+            <div class="campo campo-opcao">
+                <label for="atrasados">
+                    <input type="checkbox" id="atrasados" name="atrasados" value="true"
+                           th:checked="${apenasAtrasados}">
+                    Apenas fora de prazo
+                </label>
+            </div>
             <div class="accoes">
                 <button type="submit" class="botao">Filtrar</button>
                 <a class="botao secundario" th:href="@{/expedientes}">Limpar</a>
@@ -66,12 +73,13 @@
                     <th>Prioridade</th>
                     <th>Confidencialidade</th>
                     <th>Responsavel</th>
+                    <th>Prazo</th>
                     <th>Registo</th>
                     <th></th>
                 </tr>
                 </thead>
                 <tbody>
-                <tr th:each="e : ${pagina.content}">
+                <tr th:each="e : ${pagina.content}" th:classappend="${e.atrasado} ? 'linha-atrasada'">
                     <td class="mono" th:text="${e.numeroRegisto}">EXP</td>
                     <td th:text="${e.assunto}">Assunto</td>
                     <td th:text="${e.tipo.descricao}">Tipo</td>
@@ -88,6 +96,12 @@
                               th:text="${e.confidencialidade.descricao}">Nivel</span>
                     </td>
                     <td th:text="${e.responsavelActual != null} ? ${e.responsavelActual.nomeCompleto} : '-'">-</td>
+                    <td>
+                        <span th:if="${e.prazo}" th:text="${#temporals.format(e.prazo, 'dd/MM/yyyy')}">-</span>
+                        <span th:unless="${e.prazo}" class="texto-suave">sem prazo</span>
+                        <span class="etiqueta cancelado" th:if="${e.atrasado}"
+                              th:text="${e.diasDeAtraso} + 'd'">atrasado</span>
+                    </td>
                     <td th:text="${#temporals.format(e.dataRegisto, 'dd/MM/yyyy HH:mm')}">data</td>
                     <td><a class="botao secundario pequeno" th:href="@{/expedientes/{id}(id=${e.id})}">Abrir</a></td>
                 </tr>
@@ -97,10 +111,10 @@
 
         <div class="paginacao" th:if="${pagina.totalPages > 1}">
             <a th:if="${!pagina.first}"
-               th:href="@{/expedientes(texto=${texto},estado=${estadoSeleccionado},tipo=${tipoSeleccionado},pagina=${pagina.number - 1})}">Anterior</a>
+               th:href="@{/expedientes(texto=${texto},estado=${estadoSeleccionado},tipo=${tipoSeleccionado},atrasados=${apenasAtrasados},pagina=${pagina.number - 1})}">Anterior</a>
             <span class="actual" th:text="(${pagina.number} + 1) + ' / ' + ${pagina.totalPages}">1 / 1</span>
             <a th:if="${!pagina.last}"
-               th:href="@{/expedientes(texto=${texto},estado=${estadoSeleccionado},tipo=${tipoSeleccionado},pagina=${pagina.number + 1})}">Seguinte</a>
+               th:href="@{/expedientes(texto=${texto},estado=${estadoSeleccionado},tipo=${tipoSeleccionado},atrasados=${apenasAtrasados},pagina=${pagina.number + 1})}">Seguinte</a>
         </div>
     </div>
 

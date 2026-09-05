@@ -1,5 +1,7 @@
 package mz.unisced.sge.repository;
 
+import java.time.LocalDate;
+import java.util.Collection;
 import java.util.List;
 import mz.unisced.sge.model.EstadoExpediente;
 import mz.unisced.sge.model.Expediente;
@@ -29,9 +31,10 @@ public interface ExpedienteRepository extends JpaRepository<Expediente, Long> {
 
     /**
      * Pesquisa com filtros opcionais: quando um parametro vem a nulo o respectivo
-     * criterio e ignorado. A ultima condicao implementa a regra de
-     * confidencialidade - quem nao tem privilegio de ver expedientes
-     * confidenciais so ve os que criou ou dos quais e responsavel.
+     * criterio e ignorado. A penultima condicao filtra os expedientes fora de
+     * prazo e a ultima implementa a regra de confidencialidade - quem nao tem
+     * privilegio de ver expedientes confidenciais so ve os que criou ou dos
+     * quais e responsavel.
      */
     @Query("""
             select e from Expediente e
@@ -42,6 +45,8 @@ public interface ExpedienteRepository extends JpaRepository<Expediente, Long> {
                    or lower(e.remetente) like lower(concat('%', :texto, '%')))
               and (:estado is null or e.estado = :estado)
               and (:tipo is null or e.tipo = :tipo)
+              and (:apenasAtrasados = false
+                   or (e.prazo is not null and e.prazo < :hoje and e.estado not in :estadosFinais))
               and (:verConfidenciais = true
                    or e.confidencialidade <> :nivelConfidencial
                    or e.criadoPor.id = :utilizadorId
@@ -51,10 +56,32 @@ public interface ExpedienteRepository extends JpaRepository<Expediente, Long> {
     Page<Expediente> pesquisar(@Param("texto") String texto,
                                @Param("estado") EstadoExpediente estado,
                                @Param("tipo") TipoExpediente tipo,
+                               @Param("apenasAtrasados") boolean apenasAtrasados,
+                               @Param("hoje") LocalDate hoje,
+                               @Param("estadosFinais") Collection<EstadoExpediente> estadosFinais,
                                @Param("verConfidenciais") boolean verConfidenciais,
                                @Param("nivelConfidencial") NivelConfidencialidade nivelConfidencial,
                                @Param("utilizadorId") Long utilizadorId,
                                Pageable pageable);
+
+    /** Expedientes cujo prazo ja expirou e que ainda nao foram concluidos. */
+    @Query("""
+            select count(e) from Expediente e
+            where e.prazo is not null and e.prazo < :hoje and e.estado not in :estadosFinais
+            """)
+    long contarAtrasados(@Param("hoje") LocalDate hoje,
+                         @Param("estadosFinais") Collection<EstadoExpediente> estadosFinais);
+
+    @Query("""
+            select e from Expediente e
+            where e.responsavelActual = :responsavel
+              and e.prazo is not null and e.prazo < :hoje
+              and e.estado not in :estadosFinais
+            order by e.prazo asc
+            """)
+    List<Expediente> atrasadosDe(@Param("responsavel") Utilizador responsavel,
+                                 @Param("hoje") LocalDate hoje,
+                                 @Param("estadosFinais") Collection<EstadoExpediente> estadosFinais);
 
     @Query("select e.estado, count(e) from Expediente e group by e.estado order by e.estado")
     List<Object[]> contarPorEstado();

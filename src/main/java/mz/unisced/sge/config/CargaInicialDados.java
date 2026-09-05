@@ -185,7 +185,8 @@ public class CargaInicialDados implements CommandLineRunner {
                 TipoExpediente.INTERNO, Prioridade.URGENTE, NivelConfidencialidade.RESTRITO,
                 "Direccao da Faculdade", chefe, chefe);
         oficio.setEstado(EstadoExpediente.EM_TRAMITACAO);
-        oficio.setPrazo(LocalDate.now().plusDays(2));
+        // Prazo ja expirado, para demonstrar o alerta de expedientes fora de prazo.
+        oficio.setPrazo(LocalDate.now().minusDays(3));
         oficio.adicionarTramitacao(new Tramitacao(TipoMovimento.REGISTO, null, chefe,
                 "Expediente registado no sistema.", EstadoExpediente.REGISTADO));
         oficio.adicionarTramitacao(new Tramitacao(TipoMovimento.ENCAMINHAMENTO, chefe, tecnico,

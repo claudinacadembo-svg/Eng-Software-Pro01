@@ -19,6 +19,7 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -125,6 +126,14 @@ public class Expediente {
 
     public boolean isAtrasado() {
         return prazo != null && !estado.isFinal() && prazo.isBefore(LocalDate.now());
+    }
+
+    /** Numero de dias decorridos desde que o prazo expirou; zero se estiver em dia. */
+    public long getDiasDeAtraso() {
+        if (!isAtrasado()) {
+            return 0;
+        }
+        return ChronoUnit.DAYS.between(prazo, LocalDate.now());
     }
 
     public Long getId() {

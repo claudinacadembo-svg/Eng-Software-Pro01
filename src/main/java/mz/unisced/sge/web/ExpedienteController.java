@@ -52,15 +52,17 @@ public class ExpedienteController {
     public String listar(@RequestParam(required = false) String texto,
                          @RequestParam(required = false) EstadoExpediente estado,
                          @RequestParam(required = false) TipoExpediente tipo,
+                         @RequestParam(defaultValue = "false") boolean atrasados,
                          @RequestParam(defaultValue = "0") int pagina,
                          Model modelo) {
-        Page<Expediente> resultado = expedienteService.pesquisar(texto, estado, tipo, sessao.actual(),
-                PageRequest.of(Math.max(pagina, 0), TAMANHO_PAGINA));
+        Page<Expediente> resultado = expedienteService.pesquisar(texto, estado, tipo, atrasados,
+                sessao.actual(), PageRequest.of(Math.max(pagina, 0), TAMANHO_PAGINA));
 
         modelo.addAttribute("pagina", resultado);
         modelo.addAttribute("texto", texto);
         modelo.addAttribute("estadoSeleccionado", estado);
         modelo.addAttribute("tipoSeleccionado", tipo);
+        modelo.addAttribute("apenasAtrasados", atrasados);
         modelo.addAttribute("estados", EstadoExpediente.values());
         modelo.addAttribute("tipos", TipoExpediente.values());
         return "expedientes/lista";

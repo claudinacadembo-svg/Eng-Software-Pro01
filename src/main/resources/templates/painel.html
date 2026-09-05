@@ -40,9 +40,49 @@
             <div class="valor" th:text="${arquivados}">0</div>
             <div class="rotulo">Arquivados</div>
         </div>
+        <div class="indicador" th:classappend="${totalAtrasados > 0} ? 'alerta'">
+            <div class="valor" th:text="${totalAtrasados}">0</div>
+            <div class="rotulo">Fora de prazo</div>
+        </div>
         <div class="indicador" sec:authorize="hasAuthority('UTILIZADOR_LER')">
             <div class="valor" th:text="${utilizadoresActivos}">0</div>
             <div class="rotulo">Utilizadores activos</div>
+        </div>
+    </div>
+
+    <div class="cartao aviso-prazo" style="margin-top: 20px;" th:unless="${#lists.isEmpty(meusAtrasados)}">
+        <h2>Atencao: tem expedientes fora de prazo</h2>
+        <p class="texto-suave" style="margin-top: -8px;">
+            Os expedientes seguintes estao a seu cargo e o prazo de resposta ja expirou.
+        </p>
+        <div class="tabela-envolvente">
+            <table class="tabela">
+                <thead>
+                <tr>
+                    <th>Numero</th>
+                    <th>Assunto</th>
+                    <th>Prioridade</th>
+                    <th>Prazo</th>
+                    <th>Dias em atraso</th>
+                    <th></th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="e : ${meusAtrasados}">
+                    <td class="mono" th:text="${e.numeroRegisto}">EXP</td>
+                    <td th:text="${e.assunto}">Assunto</td>
+                    <td>
+                        <span class="etiqueta" th:classappend="${#strings.toLowerCase(e.prioridade.name())}"
+                              th:text="${e.prioridade.descricao}">Prioridade</span>
+                    </td>
+                    <td th:text="${#temporals.format(e.prazo, 'dd/MM/yyyy')}">-</td>
+                    <td>
+                        <span class="etiqueta cancelado" th:text="${e.diasDeAtraso} + ' dia(s)'">0</span>
+                    </td>
+                    <td><a class="botao secundario pequeno" th:href="@{/expedientes/{id}(id=${e.id})}">Abrir</a></td>
+                </tr>
+                </tbody>
+            </table>
         </div>
     </div>
 

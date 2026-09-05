@@ -44,6 +44,8 @@ public class PainelController {
         modelo.addAttribute("utilizadoresActivos", utilizadorRepository.countByActivoTrue());
         modelo.addAttribute("meusExpedientes", expedienteService.pendentesDe(utilizador));
         modelo.addAttribute("distribuicao", distribuicaoPorEstado());
+        modelo.addAttribute("totalAtrasados", expedienteService.totalAtrasados());
+        modelo.addAttribute("meusAtrasados", expedienteService.atrasadosDe(utilizador));
         return "painel";
     }
 

@@ -22,6 +22,7 @@ Módulos implementados:
 | Gestão de utilizadores e autenticação | Contas, activação/desactivação, palavras-passe cifradas com BCrypt, alteração da própria palavra-passe |
 | Controlo de acesso (RBAC) | Permissões atómicas → papéis → utilizadores; administração das permissões de cada papel pela própria aplicação |
 | Gestão de expedientes | Registo com numeração automática, anexos, encaminhamento entre utilizadores, despachos, arquivo e cancelamento |
+| Controlo de prazos | Alerta dos expedientes cujo prazo expirou, com contagem de dias em atraso, filtro próprio na listagem e destaque no painel de cada responsável |
 | Auditoria e relatórios | Registo imutável de todas as acções (incluindo acessos negados), indicadores agregados e exportação CSV |
 
 ---
@@ -148,9 +149,9 @@ utilizador `sa`, palavra-passe vazia.
 
 (Em Linux/macOS: `./mvnw test`.)
 
-São 10 testes automáticos que verificam as regras de RBAC (quem tem e quem não
-tem acesso a cada funcionalidade), a regra de confidencialidade e a
-apresentação de todos os ecrãs.
+São 14 testes automáticos que verificam as regras de RBAC (quem tem e quem não
+tem acesso a cada funcionalidade), a regra de confidencialidade, o controlo de
+prazos e a apresentação de todos os ecrãs.
 
 ---
 
@@ -267,7 +268,12 @@ PROJECTO-ESW/
    passa a *Despachado*.
 5. **Arquivo** (`EXPEDIENTE_ARQUIVAR`) — o expediente é arquivado (ou cancelado
    com motivo) e deixa de admitir movimentação.
-6. **Auditoria e relatórios** (`AUDITORIA_VER`, `RELATORIO_VER`) — consulta do
+6. **Controlo de prazos** — a cada expediente pode ser fixado um prazo. Os que o
+   ultrapassam sem serem concluídos são assinalados no painel do responsável,
+   contados no indicador *Fora de prazo* e isoláveis na listagem através do
+   filtro *Apenas fora de prazo*. Expedientes arquivados ou cancelados deixam de
+   contar.
+7. **Auditoria e relatórios** (`AUDITORIA_VER`, `RELATORIO_VER`) — consulta do
    histórico completo de acções com filtros, indicadores por estado, tipo,
    prioridade e responsável, e exportação em CSV.
 
