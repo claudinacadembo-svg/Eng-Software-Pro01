@@ -304,4 +304,4 @@ Trabalho realizado em grupo, no âmbito da disciplina de Engenharia de Software.
 | Nome | Contribuição |
 |---|---|
 | Claudina Cadembo | *(preencher)* |
-| *(2.º elemento do grupo)* | *(preencher)* |
+| Yuran Varinda | *(preencher)* |
